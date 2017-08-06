@@ -19,7 +19,7 @@ class Configure(object):
     original_train_path = '../input/train.csv'
     original_test_path = '../input/test.csv'
 
-    processed_train_path = '../input/train.csv'
-    processed_test_path = '../input/test.csv'
+    processed_train_path = '../input/train_dataset.pkl'
+    processed_test_path = '../input/test_dataset.pkl'
 
     submission_path = '../result/submission_{}.csv'.format(time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime(time.time())))
