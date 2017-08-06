@@ -32,6 +32,14 @@ def generate_date_features(train, test):
     # hour
     train['pickup_hour'] = train['pickup_datetime'].dt.hour
     test['pickup_hour'] = train['pickup_datetime'].dt.hour
+    # weekday
+    train['pickup_weekday'] = train['pickup_datetime'].dt.weekday
+    test['pickup_weekday'] = train['pickup_datetime'].dt.weekday
+    # weekofyear
+    train['pickup_weekofyear'] = train['pickup_datetime'].dt.weekofyear
+    test['pickup_weekofyear'] = train['pickup_datetime'].dt.weekofyear
+
+    train.drop(['dropoff_datetime'], axis=1, inplace=True)
 
 
 def main():
@@ -40,6 +48,8 @@ def main():
     print 'generate date features...'
     generate_date_features(train, test)
     print 'train: {}, test: {}'.format(train.shape, test.shape)
+    print 'save dataset...'
+    data_utils.save_dataset(train, test)
 
 
 if __name__ == '__main__':
