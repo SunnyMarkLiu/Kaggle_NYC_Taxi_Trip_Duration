@@ -13,6 +13,7 @@ sys.path.append(module_path)
 
 import pandas as pd
 from utils import data_utils
+from conf.configure import Configure
 
 
 def generate_date_features(train, test):
@@ -47,7 +48,11 @@ def generate_date_features(train, test):
 
 
 def main():
-    train, test = data_utils.load_dataset()
+    op_scope = 'preprocess'
+    if os.path.exists(Configure.processed_train_path.format(op_scope)):
+        return
+
+    train, test = data_utils.load_dataset(op_scope)
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'generate date features...'
     generate_date_features(train, test)
@@ -60,7 +65,7 @@ def main():
 
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'save dataset...'
-    data_utils.save_dataset(train, test)
+    data_utils.save_dataset(train, test, op_scope)
 
 
 if __name__ == '__main__':

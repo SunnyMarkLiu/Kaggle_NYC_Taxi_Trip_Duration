@@ -24,7 +24,11 @@ from utils import data_utils
 
 def main():
     print 'load datas...'
-    train, test = data_utils.load_dataset()
+    op_scope = 'preprocess'
+    train, test = data_utils.load_dataset(op_scope)
+
+    random_indexs = np.arange(0, train.shape[0], 10)
+    train = train.loc[random_indexs, :]
 
     train['trip_duration'] = np.log(train['trip_duration'])
     y_train_all = train['trip_duration']
@@ -54,7 +58,7 @@ def main():
         'silent': 1
     }
 
-    for i in range(0, 2):
+    for i in range(0, 3):
         random_state = 42 + i
         X_train, X_val, y_train, y_val = train_test_split(train, y_train_all, test_size=0.25, random_state=random_state)
         print 'X_train:', X_train.shape, ', X_val:', X_val.shape
