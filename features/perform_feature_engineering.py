@@ -119,8 +119,8 @@ def generate_date_features(conbined_data):
         ((conbined_data['pickup_hour'] + (conbined_data['pickup_datetime'].dt.minute / 60.0)) / 24.0)
 
     # Make time features cyclic
-    conbined_data['pickup_week_delta_sin'] = np.sin((conbined_data['pickup_week_delta'] / 7) * np.pi) ** 2
-    conbined_data['pickup_hour_sin'] = np.sin((conbined_data['pickup_hour'] / 24) * np.pi) ** 2
+    conbined_data['pickup_week_delta_sin'] = np.sin((conbined_data['pickup_week_delta'] / 7) * np.pi)
+    conbined_data['pickup_hour_sin'] = np.sin((conbined_data['pickup_hour'] / 24) * np.pi)
 
     conbined_data.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
 
