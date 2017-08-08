@@ -32,12 +32,15 @@ def generate_date_features(train, test):
     # hour
     train['pickup_hour'] = train['pickup_datetime'].dt.hour
     test['pickup_hour'] = train['pickup_datetime'].dt.hour
-    # weekday
-    train['pickup_weekday'] = train['pickup_datetime'].dt.weekday
-    test['pickup_weekday'] = train['pickup_datetime'].dt.weekday
     # weekofyear
     train['pickup_weekofyear'] = train['pickup_datetime'].dt.weekofyear
     test['pickup_weekofyear'] = train['pickup_datetime'].dt.weekofyear
+    # dayofweek
+    train['pickup_dayofweek'] = train['pickup_datetime'].dt.dayofweek
+    test['pickup_dayofweek'] = train['pickup_datetime'].dt.dayofweek
+
+    train['is_weekend'] = train['pickup_dayofweek'].map(lambda d: (d == 0) | (d == 6))
+    test['is_weekend'] = test['pickup_dayofweek'].map(lambda d: (d == 0) | (d == 6))
 
     train.drop(['dropoff_datetime'], axis=1, inplace=True)
 
