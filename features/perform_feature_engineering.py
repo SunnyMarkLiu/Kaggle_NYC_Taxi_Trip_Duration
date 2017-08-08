@@ -93,6 +93,37 @@ def generate_distance_features(train, test):
     test.loc[:, 'center_longitude'] = (test['pickup_longitude'].values + test['dropoff_longitude'].values) / 2
 
 
+def generate_date_features(train, test):
+    # 2016-03-14 17:24:55
+    train['pickup_datetime'] = pd.to_datetime(train['pickup_datetime'])
+    train['dropoff_datetime'] = pd.to_datetime(train['dropoff_datetime'])
+    test['pickup_datetime'] = pd.to_datetime(test['pickup_datetime'])
+    # date
+    train.loc[:, 'pickup_date'] = train['pickup_datetime'].dt.date
+    test.loc[:, 'pickup_date'] = test['pickup_datetime'].dt.date
+    # month
+    train['pickup_month'] = train['pickup_datetime'].dt.month
+    test['pickup_month'] = train['pickup_datetime'].dt.month
+    # day
+    train['pickup_day'] = train['pickup_datetime'].dt.day
+    test['pickup_day'] = train['pickup_datetime'].dt.day
+    # hour
+    train['pickup_hour'] = train['pickup_datetime'].dt.hour
+    test['pickup_hour'] = train['pickup_datetime'].dt.hour
+    # weekofyear
+    train['pickup_weekofyear'] = train['pickup_datetime'].dt.weekofyear
+    test['pickup_weekofyear'] = train['pickup_datetime'].dt.weekofyear
+    # dayofweek
+    train['pickup_dayofweek'] = train['pickup_datetime'].dt.dayofweek
+    test['pickup_dayofweek'] = train['pickup_datetime'].dt.dayofweek
+
+    train['is_weekend'] = train['pickup_dayofweek'].map(lambda d: (d == 0) | (d == 6))
+    test['is_weekend'] = test['pickup_dayofweek'].map(lambda d: (d == 0) | (d == 6))
+
+    train.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
+    test.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
+
+
 def main():
     if os.path.exists(Configure.processed_train_path.format('1')):
         return
@@ -102,6 +133,7 @@ def main():
     trip_durations = train['trip_duration']
     del train['trip_duration']
     conbined_data = pd.concat([train, test])
+
     print 'generate geography pca features...'
     generate_pca_features(conbined_data)
     train = conbined_data.iloc[:train.shape[0], :]
@@ -109,6 +141,9 @@ def main():
 
     print 'generate distance features...'
     generate_distance_features(train, test)
+
+    print 'generate datetime features...'
+    generate_date_features(train, test)
 
     train['trip_duration'] = trip_durations
     print 'train: {}, test: {}'.format(train.shape, test.shape)
