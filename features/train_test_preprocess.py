@@ -42,7 +42,8 @@ def generate_date_features(train, test):
     train['is_weekend'] = train['pickup_dayofweek'].map(lambda d: (d == 0) | (d == 6))
     test['is_weekend'] = test['pickup_dayofweek'].map(lambda d: (d == 0) | (d == 6))
 
-    train.drop(['dropoff_datetime'], axis=1, inplace=True)
+    train.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
+    test.drop(['pickup_datetime', 'pickup_date'], axis=1, inplace=True)
 
 
 def main():
@@ -50,6 +51,13 @@ def main():
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'generate date features...'
     generate_date_features(train, test)
+
+    # store_and_fwd_flag
+    train['is_store_and_fwd_flag'] = train['store_and_fwd_flag'].map(lambda s: s == 'Y')
+    test['is_store_and_fwd_flag'] = test['store_and_fwd_flag'].map(lambda s: s == 'Y')
+    del train['store_and_fwd_flag']
+    del test['store_and_fwd_flag']
+
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'save dataset...'
     data_utils.save_dataset(train, test)
