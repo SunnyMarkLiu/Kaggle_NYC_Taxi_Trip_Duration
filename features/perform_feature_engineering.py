@@ -93,35 +93,36 @@ def generate_distance_features(train, test):
     test.loc[:, 'center_longitude'] = (test['pickup_longitude'].values + test['dropoff_longitude'].values) / 2
 
 
-def generate_date_features(train, test):
+def generate_date_features(conbined_data):
     # 2016-03-14 17:24:55
-    train['pickup_datetime'] = pd.to_datetime(train['pickup_datetime'])
-    train['dropoff_datetime'] = pd.to_datetime(train['dropoff_datetime'])
-    test['pickup_datetime'] = pd.to_datetime(test['pickup_datetime'])
+    conbined_data['pickup_datetime'] = pd.to_datetime(conbined_data['pickup_datetime'])
+    conbined_data['dropoff_datetime'] = pd.to_datetime(conbined_data['dropoff_datetime'])
     # date
-    train.loc[:, 'pickup_date'] = train['pickup_datetime'].dt.date
-    test.loc[:, 'pickup_date'] = test['pickup_datetime'].dt.date
+    conbined_data.loc[:, 'pickup_date'] = conbined_data['pickup_datetime'].dt.date
     # month
-    train['pickup_month'] = train['pickup_datetime'].dt.month
-    test['pickup_month'] = train['pickup_datetime'].dt.month
+    conbined_data['pickup_month'] = conbined_data['pickup_datetime'].dt.month
     # day
-    train['pickup_day'] = train['pickup_datetime'].dt.day
-    test['pickup_day'] = train['pickup_datetime'].dt.day
+    conbined_data['pickup_day'] = conbined_data['pickup_datetime'].dt.day
     # hour
-    train['pickup_hour'] = train['pickup_datetime'].dt.hour
-    test['pickup_hour'] = train['pickup_datetime'].dt.hour
+    conbined_data['pickup_hour'] = conbined_data['pickup_datetime'].dt.hour
     # weekofyear
-    train['pickup_weekofyear'] = train['pickup_datetime'].dt.weekofyear
-    test['pickup_weekofyear'] = train['pickup_datetime'].dt.weekofyear
-    # dayofweek
-    train['pickup_dayofweek'] = train['pickup_datetime'].dt.dayofweek
-    test['pickup_dayofweek'] = train['pickup_datetime'].dt.dayofweek
+    conbined_data['pickup_weekofyear'] = conbined_data['pickup_datetime'].dt.weekofyear
+    # weekday
+    conbined_data['pickup_weekday'] = conbined_data['pickup_datetime'].dt.weekday
+    # is_weekend
+    conbined_data['is_weekend'] = conbined_data['pickup_weekday'].map(lambda d: (d == 0) | (d == 6))
 
-    train['is_weekend'] = train['pickup_dayofweek'].map(lambda d: (d == 0) | (d == 6))
-    test['is_weekend'] = test['pickup_dayofweek'].map(lambda d: (d == 0) | (d == 6))
+    conbined_data['pickup_time_delta'] = (conbined_data['pickup_datetime'] -
+                                          conbined_data['pickup_datetime'].min()).dt.total_seconds()
+    conbined_data['pickup_week_delta'] = \
+        conbined_data['pickup_weekday'] + \
+        ((conbined_data['pickup_hour'] + (conbined_data['pickup_datetime'].dt.minute / 60.0)) / 24.0)
 
-    train.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
-    test.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
+    # Make time features cyclic
+    conbined_data['pickup_week_delta_sin'] = np.sin((conbined_data['pickup_week_delta'] / 7) * np.pi) ** 2
+    conbined_data['pickup_hour_sin'] = np.sin((conbined_data['pickup_hour'] / 24) * np.pi) ** 2
+
+    conbined_data.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
 
 
 def main():
@@ -136,14 +137,15 @@ def main():
 
     print 'generate geography pca features...'
     generate_pca_features(conbined_data)
+
+    print 'generate datetime features...'
+    generate_date_features(conbined_data)
+
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
 
     print 'generate distance features...'
     generate_distance_features(train, test)
-
-    print 'generate datetime features...'
-    generate_date_features(train, test)
 
     train['trip_duration'] = trip_durations
     print 'train: {}, test: {}'.format(train.shape, test.shape)
