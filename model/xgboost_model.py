@@ -24,7 +24,16 @@ from utils import data_utils
 
 def main():
     print 'load datas...'
-    op_scope = 'preprocess'
+
+    # final operate dataset
+    files = os.listdir('../input')
+    op_scope = 0
+    for f in files:
+        if '.pkl' in f:
+            op = int(f.split('_')[1])
+            if op > op_scope:
+                op_scope = op
+
     train, test = data_utils.load_dataset(op_scope)
 
     random_indexs = np.arange(0, train.shape[0], 10)

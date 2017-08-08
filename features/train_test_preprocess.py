@@ -48,11 +48,10 @@ def generate_date_features(train, test):
 
 
 def main():
-    op_scope = 'preprocess'
-    if os.path.exists(Configure.processed_train_path.format(op_scope)):
+    if os.path.exists(Configure.processed_train_path.format('0')):
         return
 
-    train, test = data_utils.load_dataset(op_scope)
+    train, test = data_utils.load_dataset(op_scope='0')
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'generate date features...'
     generate_date_features(train, test)
@@ -65,7 +64,7 @@ def main():
 
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'save dataset...'
-    data_utils.save_dataset(train, test, op_scope)
+    data_utils.save_dataset(train, test, op_scope='0')
 
 
 if __name__ == '__main__':
