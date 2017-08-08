@@ -26,7 +26,7 @@ def main():
     print 'load datas...'
     train, test = data_utils.load_dataset()
 
-    train['trip_duration'] = np.log1p(train['trip_duration'])
+    train['trip_duration'] = np.log(train['trip_duration'])
     y_train_all = train['trip_duration']
     del train['id']
     del train['trip_duration']
@@ -94,8 +94,8 @@ def main():
 
     print 'predict submit...'
     y_pred = model.predict(dtest)
-    y_pred = np.expm1(y_pred)
-    df_sub = pd.DataFrame({'ID': id_test, 'y': y_pred})
+    y_pred = np.exp(y_pred)
+    df_sub = pd.DataFrame({'id': id_test, 'trip_duration': y_pred})
     df_sub.to_csv(Configure.submission_path, index=False)
 
 
