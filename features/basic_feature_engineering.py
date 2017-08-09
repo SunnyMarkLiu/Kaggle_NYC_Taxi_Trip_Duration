@@ -90,10 +90,10 @@ def generate_distance_features(train, test, loc1='latitude', loc2='longitude', f
     test.loc[:, fea_name + 'direction'] = bearing_array(test[pickup_loc1].values, test[pickup_loc2].values,
                                                         test[dropoff_loc1].values, test[dropoff_loc2].values)
 
-    train.loc[:, fea_name+'manhattan'] = np.abs(train['dropoff_pca1'] - train['pickup_pca1']) + \
-                                    np.abs(train['dropoff_pca0'] - train['pickup_pca0'])
-    test.loc[:, fea_name+'manhattan'] = np.abs(test['dropoff_pca1'] - test['pickup_pca1']) + \
-                                   np.abs(test['dropoff_pca0'] - test['pickup_pca0'])
+    train.loc[:, fea_name + 'manhattan'] = np.abs(train['dropoff_pca1'] - train['pickup_pca1']) + \
+                                           np.abs(train['dropoff_pca0'] - train['pickup_pca0'])
+    test.loc[:, fea_name + 'manhattan'] = np.abs(test['dropoff_pca1'] - test['pickup_pca1']) + \
+                                          np.abs(test['dropoff_pca0'] - test['pickup_pca0'])
 
     train.loc[:, fea_name + 'center_latitude'] = (train[pickup_loc1].values + train[dropoff_loc1].values) / 2
     train.loc[:, fea_name + 'center_longitude'] = (train[pickup_loc2].values + train[dropoff_loc2].values) / 2
@@ -118,7 +118,7 @@ def generate_date_features(conbined_data):
     # weekday
     conbined_data['pickup_weekday'] = conbined_data['pickup_datetime'].dt.weekday
     # is_weekend
-    conbined_data['is_weekend'] = conbined_data['pickup_weekday'].map(lambda d: (d == 0) | (d == 6))
+    conbined_data['is_weekend'] = conbined_data['pickup_weekday'].map(lambda d: 1 if (d == 0) | (d == 6) else 0)
 
     conbined_data['pickup_time_delta'] = (conbined_data['pickup_datetime'] -
                                           conbined_data['pickup_datetime'].min()).dt.total_seconds()
@@ -159,6 +159,10 @@ def main():
     generate_distance_features(train, test, loc1='pca0', loc2='pca1', fea_name='pca_')
 
     train['trip_duration'] = trip_durations
+    print 'data clean according to lat_long_distance_haversine & trip_duration...'
+    train = train[train['lat_long_distance_haversine'] < 200]
+    # train = train[train['trip_duration'] < 500000]
+
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'save dataset...'
     data_utils.save_dataset(train, test, op_scope='1')

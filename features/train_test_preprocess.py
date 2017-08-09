@@ -23,8 +23,8 @@ def main():
     print 'train: {}, test: {}'.format(train.shape, test.shape)
 
     # store_and_fwd_flag
-    train['is_store_and_fwd_flag'] = train['store_and_fwd_flag'].map(lambda s: s == 'Y')
-    test['is_store_and_fwd_flag'] = test['store_and_fwd_flag'].map(lambda s: s == 'Y')
+    train['is_store_and_fwd_flag'] = train['store_and_fwd_flag'].map(lambda s: 1 if s == 'Y' else 0)
+    test['is_store_and_fwd_flag'] = test['store_and_fwd_flag'].map(lambda s: 1 if s == 'Y' else 0)
     del train['store_and_fwd_flag']
     del test['store_and_fwd_flag']
 
