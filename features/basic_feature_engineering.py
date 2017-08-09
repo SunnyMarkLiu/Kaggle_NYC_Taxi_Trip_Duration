@@ -129,7 +129,7 @@ def main():
     if os.path.exists(Configure.processed_train_path.format('1')):
         return
 
-    train, test = data_utils.load_dataset(op_scope=0)
+    train, test = data_utils.load_dataset(op_scope='0')
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     trip_durations = train['trip_duration']
     del train['trip_duration']
