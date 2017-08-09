@@ -61,36 +61,44 @@ def bearing_array(lat1, lng1, lat2, lng2):
     return np.degrees(np.arctan2(y, x))
 
 
-def generate_distance_features(train, test):
-    train.loc[:, 'distance_haversine'] = haversine_array(train['pickup_latitude'].values,
-                                                         train['pickup_longitude'].values,
-                                                         train['dropoff_latitude'].values,
-                                                         train['dropoff_longitude'].values)
-    train.loc[:, 'distance_dummy_manhattan'] = dummy_manhattan_distance(train['pickup_latitude'].values,
-                                                                        train['pickup_longitude'].values,
-                                                                        train['dropoff_latitude'].values,
-                                                                        train['dropoff_longitude'].values)
-    train.loc[:, 'direction'] = bearing_array(train['pickup_latitude'].values, train['pickup_longitude'].values,
-                                              train['dropoff_latitude'].values, train['dropoff_longitude'].values)
-    train.loc[:, 'pca_manhattan'] = np.abs(train['dropoff_pca1'] - train['pickup_pca1']) + \
+def generate_distance_features(train, test, loc1='latitude', loc2='longitude', fea_name='lat_long_'):
+    pickup_loc1 = 'pickup_{}'.format(loc1)
+    pickup_loc2 = 'pickup_{}'.format(loc2)
+
+    dropoff_loc1 = 'dropoff_{}'.format(loc1)
+    dropoff_loc2 = 'dropoff_{}'.format(loc2)
+
+    train.loc[:, fea_name + 'distance_haversine'] = haversine_array(train[pickup_loc1].values,
+                                                                    train[pickup_loc2].values,
+                                                                    train[dropoff_loc1].values,
+                                                                    train[dropoff_loc2].values)
+    test.loc[:, fea_name + 'distance_haversine'] = haversine_array(test[pickup_loc1].values,
+                                                                   test[pickup_loc2].values,
+                                                                   test[dropoff_loc1].values,
+                                                                   test[dropoff_loc2].values)
+    train.loc[:, fea_name + 'distance_dummy_manhattan'] = dummy_manhattan_distance(train[pickup_loc1].values,
+                                                                                   train[pickup_loc2].values,
+                                                                                   train[dropoff_loc1].values,
+                                                                                   train[dropoff_loc2].values)
+    test.loc[:, fea_name + 'distance_dummy_manhattan'] = dummy_manhattan_distance(test[pickup_loc1].values,
+                                                                                  test[pickup_loc2].values,
+                                                                                  test[dropoff_loc1].values,
+                                                                                  test[dropoff_loc2].values)
+
+    train.loc[:, fea_name + 'direction'] = bearing_array(train[pickup_loc1].values, train[pickup_loc2].values,
+                                                         train[dropoff_loc1].values, train[dropoff_loc2].values)
+    test.loc[:, fea_name + 'direction'] = bearing_array(test[pickup_loc1].values, test[pickup_loc2].values,
+                                                        test[dropoff_loc1].values, test[dropoff_loc2].values)
+
+    train.loc[:, fea_name+'manhattan'] = np.abs(train['dropoff_pca1'] - train['pickup_pca1']) + \
                                     np.abs(train['dropoff_pca0'] - train['pickup_pca0'])
+    test.loc[:, fea_name+'manhattan'] = np.abs(test['dropoff_pca1'] - test['pickup_pca1']) + \
+                                   np.abs(test['dropoff_pca0'] - test['pickup_pca0'])
 
-    test.loc[:, 'distance_haversine'] = haversine_array(test['pickup_latitude'].values, test['pickup_longitude'].values,
-                                                        test['dropoff_latitude'].values,
-                                                        test['dropoff_longitude'].values)
-    test.loc[:, 'distance_dummy_manhattan'] = dummy_manhattan_distance(test['pickup_latitude'].values,
-                                                                       test['pickup_longitude'].values,
-                                                                       test['dropoff_latitude'].values,
-                                                                       test['dropoff_longitude'].values)
-    test.loc[:, 'direction'] = bearing_array(test['pickup_latitude'].values, test['pickup_longitude'].values,
-                                             test['dropoff_latitude'].values, test['dropoff_longitude'].values)
-    test.loc[:, 'pca_manhattan'] = np.abs(test['dropoff_pca1'] - test['pickup_pca1']) + np.abs(
-        test['dropoff_pca0'] - test['pickup_pca0'])
-
-    train.loc[:, 'center_latitude'] = (train['pickup_latitude'].values + train['dropoff_latitude'].values) / 2
-    train.loc[:, 'center_longitude'] = (train['pickup_longitude'].values + train['dropoff_longitude'].values) / 2
-    test.loc[:, 'center_latitude'] = (test['pickup_latitude'].values + test['dropoff_latitude'].values) / 2
-    test.loc[:, 'center_longitude'] = (test['pickup_longitude'].values + test['dropoff_longitude'].values) / 2
+    train.loc[:, fea_name + 'center_latitude'] = (train[pickup_loc1].values + train[dropoff_loc1].values) / 2
+    train.loc[:, fea_name + 'center_longitude'] = (train[pickup_loc2].values + train[dropoff_loc2].values) / 2
+    test.loc[:, fea_name + 'center_latitude'] = (test[pickup_loc1].values + test[dropoff_loc1].values) / 2
+    test.loc[:, fea_name + 'center_longitude'] = (test[pickup_loc2].values + test[dropoff_loc2].values) / 2
 
 
 def generate_date_features(conbined_data):
@@ -145,7 +153,10 @@ def main():
     test = conbined_data.iloc[train.shape[0]:, :]
 
     print 'generate distance features...'
-    generate_distance_features(train, test)
+    generate_distance_features(train, test, loc1='latitude', loc2='longitude', fea_name='lat_long_')
+
+    print 'generate pca distance features...'
+    generate_distance_features(train, test, loc1='pca0', loc2='pca1', fea_name='pca_')
 
     train['trip_duration'] = trip_durations
     print 'train: {}, test: {}'.format(train.shape, test.shape)
