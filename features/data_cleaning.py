@@ -12,7 +12,6 @@ module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
 import numpy as np
-import pandas as pd
 from utils import data_utils
 
 # remove warnings
@@ -29,8 +28,8 @@ def main():
     train, test = data_utils.load_dataset(op_scope='1')
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'data clean according to lat_long_distance_haversine & trip_duration...'
-    train = train[train['lat_long_distance_haversine'] < 200]
-    # train = train[train['trip_duration'] < 500000] # 导致过拟合
+    # train = train[train['lat_long_distance_haversine'] < 300]
+    # train = train[train['trip_duration'] <= 1800000].reset_index(drop=True) # 导致过拟合
 
     print 'train: {}, test: {}'.format(train.shape, test.shape)
 
