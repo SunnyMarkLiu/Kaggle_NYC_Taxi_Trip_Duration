@@ -37,7 +37,7 @@ def main():
     train, test = data_utils.load_dataset(op_scope)
 
     random_indexs = np.arange(0, train.shape[0], 10)
-    train = train.loc[random_indexs, :]
+    train = train.iloc[random_indexs, :]
 
     train['trip_duration'] = np.log(train['trip_duration'])
     y_train_all = train['trip_duration']

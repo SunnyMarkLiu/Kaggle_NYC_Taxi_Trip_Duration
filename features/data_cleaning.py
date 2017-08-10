@@ -30,7 +30,7 @@ def main():
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'data clean according to lat_long_distance_haversine & trip_duration...'
     train = train[train['lat_long_distance_haversine'] < 200]
-    train = train[train['trip_duration'] < 500000]
+    # train = train[train['trip_duration'] < 500000] # 导致过拟合
 
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'save dataset...'
