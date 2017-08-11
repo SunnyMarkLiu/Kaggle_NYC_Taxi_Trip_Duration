@@ -41,7 +41,9 @@ def generate_groupby_speed_features(train, test, n_clusters, fea_name='lat_long_
     train['log_trip_duration'] = np.log(train['trip_duration'].values + 1)
     # groupby
     gby_cols = ['pickup_weekofyear', 'pickup_hour', 'pickup_weekday', 'pickup_week_hour',
-                'pickup_kmeans_{}_cluster'.format(n_clusters), 'dropoff_kmeans_{}_cluster'.format(n_clusters)]
+                'pickup_week_delta_sin', 'pickup_hour_sin', 'pickup_day',
+                'pickup_kmeans_{}_cluster'.format(n_clusters),
+                'dropoff_kmeans_{}_cluster'.format(n_clusters)]
     for gby_col in gby_cols:
         gby = train.groupby(gby_col).mean()[[fea_name + 'avg_speed_h', fea_name + 'avg_speed_m', 'log_trip_duration']]
         gby.columns = ['%s_gby_%s' % (col, gby_col) for col in gby.columns]
