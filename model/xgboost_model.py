@@ -63,7 +63,7 @@ def main():
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'updater': 'grow_gpu',
-        'gpu_id': 2,
+        'gpu_id': 1,
         'silent': 1
     }
 
@@ -93,7 +93,7 @@ def main():
         train_rmses.append(train_rmse)
         val_rmses.append(val_rmse)
 
-    print '\naverage train rmse = {}, average validate rmse = {}'.format(
+    print '\naverage train rmse = {} average validate rmse = {}'.format(
         sum(train_rmses) / len(train_rmses),
         sum(val_rmses) / len(val_rmses))
 
