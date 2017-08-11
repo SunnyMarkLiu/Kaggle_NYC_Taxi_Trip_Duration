@@ -185,7 +185,15 @@ def main():
     generate_distance_features(train, test, loc1='pca0', loc2='pca1', fea_name='pca_')
 
     print 'generate location bin features...'
+    train['pickup_pca0'] = train['pickup_pca0'] * 1000
+    train['pickup_pca1'] = train['pickup_pca1'] * 1000
+    test['pickup_pca0'] = test['pickup_pca0'] * 1000
+    test['pickup_pca1'] = test['pickup_pca1'] * 1000
     generate_location_bin_features(train, test, loc1='latitude', loc2='longitude', fea_name='lat_long_')
+    train['pickup_pca0'] = train['pickup_pca0'] / 1000
+    train['pickup_pca1'] = train['pickup_pca1'] / 1000
+    test['pickup_pca0'] = test['pickup_pca0'] / 1000
+    test['pickup_pca1'] = test['pickup_pca1'] / 1000
 
     train['trip_duration'] = trip_durations
     print 'train: {}, test: {}'.format(train.shape, test.shape)
