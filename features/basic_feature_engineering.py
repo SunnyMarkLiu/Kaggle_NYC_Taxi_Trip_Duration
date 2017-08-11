@@ -136,27 +136,31 @@ def generate_date_features(conbined_data):
     conbined_data.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
 
 
-def generate_location_bin_features(train, test, loc1='latitude', loc2='longitude', fea_name='lat_long_'):
+def generate_location_bin_features(train, test, loc1='latitude', loc2='longitude', fea_name='lat_long_', round_num=2):
     pickup_loc1 = 'pickup_{}'.format(loc1)
     pickup_loc2 = 'pickup_{}'.format(loc2)
 
     dropoff_loc1 = 'dropoff_{}'.format(loc1)
     dropoff_loc2 = 'dropoff_{}'.format(loc2)
 
-    train.loc[:, '{}_bin'.format(pickup_loc1)] = np.round(train[pickup_loc1], 2)
-    train.loc[:, '{}_bin'.format(pickup_loc2)] = np.round(train[pickup_loc2], 2)
-    test.loc[:, '{}_bin'.format(pickup_loc1)] = np.round(test[pickup_loc1], 2)
-    test.loc[:, '{}_bin'.format(pickup_loc2)] = np.round(test[pickup_loc2], 2)
+    train.loc[:, '{}_bin'.format(pickup_loc1)] = np.round(train[pickup_loc1], round_num)
+    train.loc[:, '{}_bin'.format(pickup_loc2)] = np.round(train[pickup_loc2], round_num)
+    test.loc[:, '{}_bin'.format(pickup_loc1)] = np.round(test[pickup_loc1], round_num)
+    test.loc[:, '{}_bin'.format(pickup_loc2)] = np.round(test[pickup_loc2], round_num)
 
-    train.loc[:, '{}_bin'.format(dropoff_loc1)] = np.round(train[dropoff_loc1], 2)
-    train.loc[:, '{}_bin'.format(dropoff_loc2)] = np.round(train[dropoff_loc2], 2)
-    test.loc[:, '{}_bin'.format(dropoff_loc1)] = np.round(test[dropoff_loc1], 2)
-    test.loc[:, '{}_bin'.format(dropoff_loc2)] = np.round(test[dropoff_loc2], 2)
+    train.loc[:, '{}_bin'.format(dropoff_loc1)] = np.round(train[dropoff_loc1], round_num)
+    train.loc[:, '{}_bin'.format(dropoff_loc2)] = np.round(train[dropoff_loc2], round_num)
+    test.loc[:, '{}_bin'.format(dropoff_loc1)] = np.round(test[dropoff_loc1], round_num)
+    test.loc[:, '{}_bin'.format(dropoff_loc2)] = np.round(test[dropoff_loc2], round_num)
 
-    train.loc[:, '{}center_latitude_bin'.format(fea_name)] = np.round(train['{}center_latitude'.format(fea_name)], 2)
-    train.loc[:, '{}center_longitude_bin'.format(fea_name)] = np.round(train['{}center_longitude'.format(fea_name)], 2)
-    test.loc[:, '{}center_latitude_bin'.format(fea_name)] = np.round(test['{}center_latitude'.format(fea_name)], 2)
-    test.loc[:, '{}center_longitude_bin'.format(fea_name)] = np.round(test['{}center_longitude'.format(fea_name)], 2)
+    train.loc[:, '{}center_latitude_bin'.format(fea_name)] = np.round(train['{}center_latitude'.format(fea_name)],
+                                                                      round_num)
+    train.loc[:, '{}center_longitude_bin'.format(fea_name)] = np.round(train['{}center_longitude'.format(fea_name)],
+                                                                       round_num)
+    test.loc[:, '{}center_latitude_bin'.format(fea_name)] = np.round(test['{}center_latitude'.format(fea_name)],
+                                                                     round_num)
+    test.loc[:, '{}center_longitude_bin'.format(fea_name)] = np.round(test['{}center_longitude'.format(fea_name)],
+                                                                      round_num)
 
 
 def main():
@@ -185,7 +189,19 @@ def main():
     generate_distance_features(train, test, loc1='pca0', loc2='pca1', fea_name='pca_')
 
     print 'generate location bin features...'
-    generate_location_bin_features(train, test, loc1='latitude', loc2='longitude', fea_name='lat_long_')
+    generate_location_bin_features(train, test, loc1='latitude', loc2='longitude',
+                                   fea_name='lat_long_', round_num=2)
+    print 'generate pca location bin features...'
+    # train['pickup_pca0'] = train['pickup_pca0'] * 1000
+    # train['pickup_pca1'] = train['pickup_pca1'] * 1000
+    # test['pickup_pca0'] = test['pickup_pca0'] * 1000
+    # test['pickup_pca1'] = test['pickup_pca1'] * 1000
+    # generate_location_bin_features(train, test, loc1='pca0', loc2='pca1',
+    #                                fea_name='pca_', round_num=2)
+    # train['pickup_pca0'] = train['pickup_pca0'] / 1000
+    # train['pickup_pca1'] = train['pickup_pca1'] / 1000
+    # test['pickup_pca0'] = test['pickup_pca0'] / 1000
+    # test['pickup_pca1'] = test['pickup_pca1'] / 1000
 
     train['trip_duration'] = trip_durations
     print 'train: {}, test: {}'.format(train.shape, test.shape)
