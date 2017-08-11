@@ -117,6 +117,9 @@ def generate_date_features(conbined_data):
     conbined_data['pickup_weekofyear'] = conbined_data['pickup_datetime'].dt.weekofyear
     # weekday
     conbined_data['pickup_weekday'] = conbined_data['pickup_datetime'].dt.weekday
+    # week_hour
+    conbined_data.loc[:, 'pickup_week_hour'] = conbined_data['pickup_weekday'] * 24 + conbined_data['pickup_hour']
+
     # is_weekend
     conbined_data['is_weekend'] = conbined_data['pickup_weekday'].map(lambda d: 1 if (d == 0) | (d == 6) else 0)
 
@@ -131,6 +134,29 @@ def generate_date_features(conbined_data):
     conbined_data['pickup_hour_sin'] = np.sin((conbined_data['pickup_hour'] / 24) * np.pi)
 
     conbined_data.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
+
+
+def generate_location_bin_features(train, test, loc1='latitude', loc2='longitude', fea_name='lat_long_'):
+    pickup_loc1 = 'pickup_{}'.format(loc1)
+    pickup_loc2 = 'pickup_{}'.format(loc2)
+
+    dropoff_loc1 = 'dropoff_{}'.format(loc1)
+    dropoff_loc2 = 'dropoff_{}'.format(loc2)
+
+    train.loc[:, '{}_bin'.format(pickup_loc1)] = np.round(train[pickup_loc1], 2)
+    train.loc[:, '{}_bin'.format(pickup_loc2)] = np.round(train[pickup_loc2], 2)
+    test.loc[:, '{}_bin'.format(pickup_loc1)] = np.round(test[pickup_loc1], 2)
+    test.loc[:, '{}_bin'.format(pickup_loc2)] = np.round(test[pickup_loc2], 2)
+
+    train.loc[:, '{}_bin'.format(dropoff_loc1)] = np.round(train[dropoff_loc1], 2)
+    train.loc[:, '{}_bin'.format(dropoff_loc2)] = np.round(train[dropoff_loc2], 2)
+    test.loc[:, '{}_bin'.format(dropoff_loc1)] = np.round(test[dropoff_loc1], 2)
+    test.loc[:, '{}_bin'.format(dropoff_loc2)] = np.round(test[dropoff_loc2], 2)
+
+    train.loc[:, '{}center_latitude_bin'.format(fea_name)] = np.round(train['{}center_latitude'.format(fea_name)], 2)
+    train.loc[:, '{}center_longitude_bin'.format(fea_name)] = np.round(train['{}center_longitude'.format(fea_name)], 2)
+    test.loc[:, '{}center_latitude_bin'.format(fea_name)] = np.round(test['{}center_latitude'.format(fea_name)], 2)
+    test.loc[:, '{}center_longitude_bin'.format(fea_name)] = np.round(test['{}center_longitude'.format(fea_name)], 2)
 
 
 def main():
@@ -157,6 +183,9 @@ def main():
 
     print 'generate pca distance features...'
     generate_distance_features(train, test, loc1='pca0', loc2='pca1', fea_name='pca_')
+
+    print 'generate location bin features...'
+    generate_location_bin_features(train, test, loc1='latitude', loc2='longitude', fea_name='lat_long_')
 
     train['trip_duration'] = trip_durations
     print 'train: {}, test: {}'.format(train.shape, test.shape)

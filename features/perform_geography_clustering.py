@@ -42,7 +42,9 @@ def main():
     del train['trip_duration']
     conbined_data = pd.concat([train, test])
 
-    location_clustering(conbined_data, n_clusters=10 ** 2, batch_size=32 ** 3)
+    n_clusters = 10 ** 2
+    print 'location clustering...'
+    location_clustering(conbined_data, n_clusters=n_clusters, batch_size=32 ** 3)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
