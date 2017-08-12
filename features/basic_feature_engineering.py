@@ -133,7 +133,7 @@ def generate_date_features(conbined_data):
     conbined_data['pickup_week_delta_sin'] = np.sin((conbined_data['pickup_week_delta'] / 7) * np.pi)
     conbined_data['pickup_hour_sin'] = np.sin((conbined_data['pickup_hour'] / 24) * np.pi)
 
-    conbined_data.drop(['pickup_datetime', 'dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
+    conbined_data.drop(['dropoff_datetime', 'pickup_date'], axis=1, inplace=True)
 
 
 def generate_location_bin_features(train, test, loc1='latitude', loc2='longitude', fea_name='lat_long_', round_num=2):
