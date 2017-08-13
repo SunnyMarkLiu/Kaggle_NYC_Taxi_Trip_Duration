@@ -29,7 +29,7 @@ def main():
     files = os.listdir('../input')
     op_scope = 0
     for f in files:
-        if '.pkl' in f:
+        if 'operate' in f:
             op = int(f.split('_')[1])
             if op > op_scope:
                 op_scope = op
@@ -63,7 +63,7 @@ def main():
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'updater': 'grow_gpu',
-        'gpu_id': 1,
+        'gpu_id': 2,
         'silent': 1
     }
 
@@ -77,7 +77,7 @@ def main():
 
         cv_result = xgb.cv(dict(xgb_params),
                            dtrain,
-                           num_boost_round=500,
+                           num_boost_round=4000,
                            early_stopping_rounds=50,
                            verbose_eval=50,
                            show_stdv=False

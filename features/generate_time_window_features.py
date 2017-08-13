@@ -118,7 +118,9 @@ def generate_dropoff_timewindow_traffic(conbined_data_df, timewindow_days, n_clu
 def perform_time_window(conbined_data, timewindow_days):
     """应用时间窗"""
     n_clusters = 100
+    print 'generate pikcup timewindow traffic...'
     pikcup_timewindow_traffic = generate_pikcup_timewindow_traffic(conbined_data, timewindow_days, n_clusters)
+    print 'generate dropoff timewindow traffic...'
     dropoff_timewindow_traffic = generate_dropoff_timewindow_traffic(conbined_data, timewindow_days, n_clusters)
     conbined_data = pd.merge(conbined_data, pikcup_timewindow_traffic, how='left', on='id')
     conbined_data = pd.merge(conbined_data, dropoff_timewindow_traffic, how='left', on='id')
@@ -137,7 +139,7 @@ def main():
     conbined_data.columns = test.columns.values
     conbined_data.index = range(conbined_data.shape[0])
 
-    # 时间窗大小
+    # timewindow size in minute
     timewindow_days = [60]
     conbined_data = perform_time_window(conbined_data, timewindow_days)
 
