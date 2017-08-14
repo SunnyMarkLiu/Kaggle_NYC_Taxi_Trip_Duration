@@ -19,7 +19,7 @@ import xgboost as xgb
 
 # my own module
 from conf.configure import Configure
-from utils import data_utils
+from utils import data_utils, feature_util
 
 
 def main():
@@ -47,6 +47,9 @@ def main():
     del test['id']
 
     print 'train:', train.shape, ', test:', test.shape
+
+    print 'feature check before modeling...'
+    feature_util.feature_check_before_modeling(train, test, train.columns)
 
     train_rmses = []
     val_rmses = []

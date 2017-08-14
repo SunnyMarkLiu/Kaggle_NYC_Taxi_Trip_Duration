@@ -34,4 +34,12 @@ def feature_check_before_modeling(train, test, check_feature_names):
         feature_stats['train_std'] + feature_stats['test_std']) * 2
     feature_stats.loc[:, 'train_test_nan_diff'] = np.abs(feature_stats['train_nan'] - feature_stats['test_nan'])
 
+    print '======== train test mean difference (ignore Nans) ========'
+    feature_stats = feature_stats.sort_values(by='train_test_mean_diff')
+    print feature_stats[['feature', 'train_test_mean_diff']].tail()
+
+    print '======== train test mean difference (ignore Nans) ========'
+    feature_stats = feature_stats.sort_values(by='train_test_nan_diff')
+    print feature_stats[['feature', 'train_nan', 'test_nan', 'train_test_nan_diff']].tail()
+
     return feature_stats
