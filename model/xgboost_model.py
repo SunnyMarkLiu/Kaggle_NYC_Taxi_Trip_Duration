@@ -63,11 +63,11 @@ def main():
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'updater': 'grow_gpu',
-        'gpu_id': 2,
+        'gpu_id': 0,
         'silent': 1
     }
 
-    for i in range(0, 3):
+    for i in range(0, 1):
         random_state = 42 + i
         X_train, X_val, y_train, y_val = train_test_split(train, y_train_all, test_size=0.25, random_state=random_state)
         print 'X_train:', X_train.shape, ', X_val:', X_val.shape

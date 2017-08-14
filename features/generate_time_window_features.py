@@ -57,7 +57,7 @@ def generate_pikcup_timewindow_traffic(conbined_data_df, timewindow_days, n_clus
 
             feature = 'this_' + cluster_feature + 'after_' + str(timewindow) + 'minutes_traffic'
             after_features_df = pd.DataFrame({'id': conbined_data['id'],
-                                                 feature: after_timewindow_traffic})
+                                              feature: after_timewindow_traffic})
 
             after_features_df.to_csv(cache_file, index=False)
         else:
@@ -100,7 +100,7 @@ def generate_dropoff_timewindow_traffic(conbined_data_df, timewindow_days, n_clu
 
             feature = 'this_' + cluster_feature + 'pre_' + str(timewindow) + 'minutes_traffic'
             pre_features_df = pd.DataFrame({'id': conbined_data['id'],
-                                                 feature: pre_timewindow_traffic})
+                                            feature: pre_timewindow_traffic})
 
             pre_features_df.to_csv(cache_file, index=False)
         else:
@@ -109,6 +109,7 @@ def generate_dropoff_timewindow_traffic(conbined_data_df, timewindow_days, n_clu
         timewindow_traffic = pd.merge(timewindow_traffic, pre_features_df, how='left', on='id')
 
     return timewindow_traffic
+
 
 def perform_time_window(conbined_data, timewindow_days):
     """应用时间窗"""
@@ -142,7 +143,6 @@ def main():
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
-
 
     train['trip_duration'] = trip_durations
     print 'train: {}, test: {}'.format(train.shape, test.shape)
