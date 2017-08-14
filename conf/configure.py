@@ -24,5 +24,5 @@ class Configure(object):
 
     submission_path = '../result/submission_{}.csv'.format(time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime(time.time())))
 
-    pikcup_time_window_cluster_traffic_features_path = '../input/pikcup_after_time_window_{}_cluster_{}_traffic_features.pkl'
-    dropoff_time_window_cluster_traffic_features_path = '../input/dropoff_before_time_window_{}_cluster_{}_traffic_features.pkl'
+    pikcup_time_window_cluster_traffic_features_path = '../input/pikcup_after_time_window_{}_cluster_{}_traffic_features.csv'
+    dropoff_time_window_cluster_traffic_features_path = '../input/dropoff_before_time_window_{}_cluster_{}_traffic_features.csv'

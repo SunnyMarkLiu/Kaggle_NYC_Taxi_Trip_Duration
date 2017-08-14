@@ -14,7 +14,6 @@ sys.path.append(module_path)
 import pandas as pd
 # remove warnings
 import warnings
-import cPickle
 from tqdm import tqdm
 
 warnings.filterwarnings('ignore')
@@ -56,17 +55,15 @@ def generate_pikcup_timewindow_traffic(conbined_data_df, timewindow_days, n_clus
                 traffic_count = 0 if len(traffic_count) == 0 else traffic_count[0]
                 after_timewindow_traffic.append(traffic_count)
 
-            feature = 'this_' + cluster_feature + 'pre_' + str(timewindow) + '_traffic'
-            pre_features_df = pd.DataFrame({'id': conbined_data['id'],
+            feature = 'this_' + cluster_feature + 'after_' + str(timewindow) + 'minutes_traffic'
+            after_features_df = pd.DataFrame({'id': conbined_data['id'],
                                                  feature: after_timewindow_traffic})
 
-            with open(cache_file, "wb") as f:
-                cPickle.dump(pre_features_df, f, -1)
+            after_features_df.to_csv(cache_file, index=False)
         else:
-            with open(cache_file, "rb") as f:
-                pre_features_df = cPickle.load(f)
+            after_features_df = pd.read_csv(cache_file)
 
-        timewindow_traffic = pd.merge(timewindow_traffic, pre_features_df, how='left', on='id')
+        timewindow_traffic = pd.merge(timewindow_traffic, after_features_df, how='left', on='id')
 
     return timewindow_traffic
 
@@ -85,33 +82,31 @@ def generate_dropoff_timewindow_traffic(conbined_data_df, timewindow_days, n_clu
         cache_file = Configure.dropoff_time_window_cluster_traffic_features_path.format(timewindow, n_clusters)
 
         if not os.path.exists(cache_file):
-            after_timewindow_traffic = []
+            pre_timewindow_traffic = []
             for i in tqdm(range(conbined_data.shape[0])):
                 current_time = conbined_data.loc[i, 'dropoff_datetime']
                 indexs = (current_time < conbined_data['dropoff_datetime']) & \
                          (conbined_data['dropoff_datetime'] < (current_time + datetime.timedelta(minutes=timewindow)))
                 df = conbined_data[indexs]
                 if df.shape[0] == 0:
-                    after_timewindow_traffic.append(0)
+                    pre_timewindow_traffic.append(0)
                     continue
                 df = df.groupby([cluster_feature]).count()['dropoff_datetime'].reset_index()
                 df.columns = [cluster_feature, 'traffic_count']
 
                 traffic_count = df[df[cluster_feature] == conbined_data.loc[i, cluster_feature]]['traffic_count'].values
                 traffic_count = 0 if len(traffic_count) == 0 else traffic_count[0]
-                after_timewindow_traffic.append(traffic_count)
+                pre_timewindow_traffic.append(traffic_count)
 
-            feature = 'this_' + cluster_feature + 'after_' + str(timewindow) + '_traffic'
-            after_features_df = pd.DataFrame({'id': conbined_data['id'],
-                                                 feature: after_timewindow_traffic})
+            feature = 'this_' + cluster_feature + 'pre_' + str(timewindow) + 'minutes_traffic'
+            pre_features_df = pd.DataFrame({'id': conbined_data['id'],
+                                                 feature: pre_timewindow_traffic})
 
-            with open(cache_file, "wb") as f:
-                cPickle.dump(after_features_df, f, -1)
+            pre_features_df.to_csv(cache_file, index=False)
         else:
-            with open(cache_file, "rb") as f:
-                after_features_df = cPickle.load(f)
+            pre_features_df = pd.read_csv(cache_file)
 
-        timewindow_traffic = pd.merge(timewindow_traffic, after_features_df, how='left', on='id')
+        timewindow_traffic = pd.merge(timewindow_traffic, pre_features_df, how='left', on='id')
 
     return timewindow_traffic
 
