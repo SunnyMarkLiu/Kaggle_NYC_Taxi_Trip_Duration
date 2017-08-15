@@ -66,7 +66,7 @@ def main():
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'updater': 'grow_gpu',
-        'gpu_id': 0,
+        'gpu_id': 1,
         'silent': 1
     }
 

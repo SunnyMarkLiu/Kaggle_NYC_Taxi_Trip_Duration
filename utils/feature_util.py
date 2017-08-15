@@ -13,6 +13,10 @@ sys.path.append(module_path)
 
 import numpy as np
 import pandas as pd
+# remove warnings
+import warnings
+warnings.filterwarnings('ignore')
+import dataframe_util
 
 
 def feature_check_before_modeling(train, test, check_feature_names):
@@ -22,6 +26,11 @@ def feature_check_before_modeling(train, test, check_feature_names):
     and test sets are iid. If there is huge differenc between train and 
     test set than probably you have a bug in your feature extraction pipeline.
     """
+    print '======== train data missing info ========'
+    print dataframe_util.contains_null(train)
+    print '======== test data missing info ========'
+    print dataframe_util.contains_null(test)
+
     feature_stats = pd.DataFrame({'feature': check_feature_names})
     feature_stats.loc[:, 'train_mean'] = np.nanmean(train[check_feature_names].values, axis=0).round(4)
     feature_stats.loc[:, 'test_mean'] = np.nanmean(test[check_feature_names].values, axis=0).round(4)
