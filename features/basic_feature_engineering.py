@@ -90,10 +90,10 @@ def generate_distance_features(train, test, loc1='latitude', loc2='longitude', f
     test.loc[:, fea_name + 'direction'] = bearing_array(test[pickup_loc1].values, test[pickup_loc2].values,
                                                         test[dropoff_loc1].values, test[dropoff_loc2].values)
 
-    train.loc[:, fea_name + 'manhattan'] = np.abs(train['dropoff_pca1'] - train['pickup_pca1']) + \
-                                           np.abs(train['dropoff_pca0'] - train['pickup_pca0'])
-    test.loc[:, fea_name + 'manhattan'] = np.abs(test['dropoff_pca1'] - test['pickup_pca1']) + \
-                                          np.abs(test['dropoff_pca0'] - test['pickup_pca0'])
+    # train.loc[:, fea_name + 'manhattan'] = np.abs(train['dropoff_pca1'] - train['pickup_pca1']) + \
+    #                                        np.abs(train['dropoff_pca0'] - train['pickup_pca0'])
+    # test.loc[:, fea_name + 'manhattan'] = np.abs(test['dropoff_pca1'] - test['pickup_pca1']) + \
+    #                                       np.abs(test['dropoff_pca0'] - test['pickup_pca0'])
 
     train.loc[:, fea_name + 'center_latitude'] = (train[pickup_loc1].values + train[dropoff_loc1].values) / 2
     train.loc[:, fea_name + 'center_longitude'] = (train[pickup_loc2].values + train[dropoff_loc2].values) / 2
@@ -179,6 +179,8 @@ def main():
     print 'generate datetime features...'
     generate_date_features(conbined_data)
 
+    conbined_data.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
+
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
 
@@ -188,10 +190,10 @@ def main():
     print 'generate pca distance features...'
     generate_distance_features(train, test, loc1='pca0', loc2='pca1', fea_name='pca_')
 
-    print 'generate location bin features...'
-    generate_location_bin_features(train, test, loc1='latitude', loc2='longitude',
-                                   fea_name='lat_long_', round_num=2)
-    print 'generate pca location bin features...'
+    # print 'generate location bin features...'
+    # generate_location_bin_features(train, test, loc1='latitude', loc2='longitude',
+    #                                fea_name='lat_long_', round_num=2)
+    # print 'generate pca location bin features...'
     # train['pickup_pca0'] = train['pickup_pca0'] * 1000
     # train['pickup_pca1'] = train['pickup_pca1'] * 1000
     # test['pickup_pca0'] = test['pickup_pca0'] * 1000
