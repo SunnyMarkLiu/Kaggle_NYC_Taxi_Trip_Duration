@@ -38,14 +38,17 @@ def generate_groupby_speed_features(train, test, n_clusters, loc1='latitude', lo
     train.loc[:, fea_name + 'avg_speed_m'] = 1000 * train[fea_name + 'distance_dummy_manhattan'] / train['trip_duration']
 
     train['log_trip_duration'] = np.log(train['trip_duration'].values + 1)
+    target_columns = [fea_name + 'avg_speed_h', fea_name + 'avg_speed_m', 'log_trip_duration']
     # groupby
     print 'perform groupby...'
     gby_cols = ['pickup_weekofyear', 'pickup_hour', 'pickup_weekday', 'pickup_week_hour',
                 'pickup_week_delta_sin', 'pickup_hour_sin', 'pickup_day',
                 'pickup_kmeans_{}_cluster'.format(n_clusters),
                 'dropoff_kmeans_{}_cluster'.format(n_clusters)]
+
+    free_memory = ['id'] + gby_cols + target_columns
     for gby_col in gby_cols:
-        gby = train.groupby(gby_col).mean()[[fea_name + 'avg_speed_h', fea_name + 'avg_speed_m', 'log_trip_duration']]
+        gby = train[free_memory].groupby(gby_col).mean()[target_columns]
         gby.columns = ['%s_gby_%s' % (col, gby_col) for col in gby.columns]
         train = pd.merge(train, gby, how='left', left_on=gby_col, right_index=True)
         test = pd.merge(test, gby, how='left', left_on=gby_col, right_index=True)
@@ -61,7 +64,7 @@ def generate_groupby_speed_features(train, test, n_clusters, loc1='latitude', lo
                 ['pickup_hour', 'pickup_kmeans_{}_cluster'.format(n_clusters), 'dropoff_kmeans_{}_cluster'.format(n_clusters)],
                 ['pickup_hour', 'pickup_kmeans_{}_cluster'.format(n_clusters)],
                 ['pickup_hour', 'dropoff_kmeans_{}_cluster'.format(n_clusters)]]
-    target_columns = [fea_name + 'avg_speed_h', fea_name + 'avg_speed_m', 'log_trip_duration']
+
     for gby_cols in gby_colses:
         freed_columns = target_columns
         freed_columns.extend(gby_cols)
@@ -97,7 +100,7 @@ def main():
     conbined_data = pd.concat([train, test])
 
     n_clusters = 10 ** 2
-    print 'location clustering...'
+    print 'location clustering n_clusters = {}...'.format(n_clusters)
     location_clustering(conbined_data, n_clusters=n_clusters, batch_size=32 ** 3)
 
     train = conbined_data.iloc[:train.shape[0], :]
@@ -106,7 +109,7 @@ def main():
 
     print 'generate lat_long groupby speed features...'
     train, test = generate_groupby_speed_features(train, test, n_clusters, loc1='latitude', loc2='longitude', fea_name='lat_long_')
-    print 'generate pca groupby speed features...'
+    # print 'generate pca groupby speed features...'
     # train, test = generate_groupby_speed_features(train, test, n_clusters, loc1='pca0', loc2='pca1', fea_name='pca_')
 
     print 'train: {}, test: {}'.format(train.shape, test.shape)
