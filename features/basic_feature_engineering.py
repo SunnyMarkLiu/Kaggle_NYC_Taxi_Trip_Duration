@@ -179,8 +179,6 @@ def main():
     print 'generate datetime features...'
     generate_date_features(conbined_data)
 
-    conbined_data.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
-
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
 

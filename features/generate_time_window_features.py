@@ -125,9 +125,9 @@ def perform_time_window(conbined_data, timewindow_days):
 
 
 def main():
-    if os.path.exists(Configure.processed_train_path.format('4')):
+    if os.path.exists(Configure.processed_train_path.format('5')):
         return
-    train, test = data_utils.load_dataset(op_scope='3')
+    train, test = data_utils.load_dataset(op_scope='4')
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     trip_durations = train['trip_duration']
     del train['trip_duration']
@@ -147,7 +147,7 @@ def main():
     train['trip_duration'] = trip_durations
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     print 'save dataset...'
-    data_utils.save_dataset(train, test, op_scope='4')
+    data_utils.save_dataset(train, test, op_scope='5')
 
 
 if __name__ == '__main__':

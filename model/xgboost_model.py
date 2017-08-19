@@ -70,7 +70,7 @@ def main():
         'silent': 1
     }
 
-    for i in range(0, 3):
+    for i in range(0, 1):
         random_state = 42 + i
         X_train, X_val, y_train, y_val = train_test_split(train, y_train_all, test_size=0.25, random_state=random_state)
         print 'X_train:', X_train.shape, ', X_val:', X_val.shape
@@ -80,7 +80,7 @@ def main():
 
         cv_result = xgb.cv(dict(xgb_params),
                            dtrain,
-                           num_boost_round=500,
+                           num_boost_round=4000,
                            early_stopping_rounds=50,
                            verbose_eval=50,
                            show_stdv=False
