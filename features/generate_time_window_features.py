@@ -135,8 +135,8 @@ def main():
     conbined_data.columns = test.columns.values
     conbined_data.index = range(conbined_data.shape[0])
 
-    # timewindow size in minute
-    timewindow_days = [60]
+    # timewindow size in minutes
+    timewindow_days = [3, 5, 10, 15, 30]
     conbined_data = perform_time_window(conbined_data, timewindow_days)
 
     conbined_data.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
