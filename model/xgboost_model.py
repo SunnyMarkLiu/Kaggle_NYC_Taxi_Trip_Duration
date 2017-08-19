@@ -80,7 +80,7 @@ def main():
 
         cv_result = xgb.cv(dict(xgb_params),
                            dtrain,
-                           num_boost_round=4000,
+                           num_boost_round=1000,
                            early_stopping_rounds=50,
                            verbose_eval=50,
                            show_stdv=False
