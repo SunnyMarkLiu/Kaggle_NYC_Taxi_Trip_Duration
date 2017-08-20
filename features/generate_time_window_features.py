@@ -116,10 +116,10 @@ def perform_time_window(conbined_data, timewindow_days):
     n_clusters = 100
     print 'generate pikcup timewindow traffic...'
     pikcup_timewindow_traffic = generate_pikcup_timewindow_traffic(conbined_data, timewindow_days, n_clusters)
-    print 'generate dropoff timewindow traffic...'
-    dropoff_timewindow_traffic = generate_dropoff_timewindow_traffic(conbined_data, timewindow_days, n_clusters)
+    # print 'generate dropoff timewindow traffic...'
+    # dropoff_timewindow_traffic = generate_dropoff_timewindow_traffic(conbined_data, timewindow_days, n_clusters)
     conbined_data = pd.merge(conbined_data, pikcup_timewindow_traffic, how='left', on='id')
-    conbined_data = pd.merge(conbined_data, dropoff_timewindow_traffic, how='left', on='id')
+    # conbined_data = pd.merge(conbined_data, dropoff_timewindow_traffic, how='left', on='id')
 
     return conbined_data
 
@@ -134,10 +134,8 @@ def main():
     conbined_data.index = range(conbined_data.shape[0])
 
     # timewindow size in minutes
-    timewindow_days = [3, 5, 10, 15, 30, 60]
+    timewindow_days = [10, 15]
     conbined_data = perform_time_window(conbined_data, timewindow_days)
-
-    conbined_data.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]

@@ -47,8 +47,6 @@ def main():
     print 'drop some features, missing_rate > {}'.format(drop_missing_rate)
     conbined_data = drop_some_features(conbined_data, drop_missing_rate=drop_missing_rate)
 
-    conbined_data.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
-
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
     train['trip_duration'] = trip_durations
