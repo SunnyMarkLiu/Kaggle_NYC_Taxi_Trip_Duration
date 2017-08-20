@@ -53,6 +53,11 @@ def calc_heavy_traffic_cluster_distances(conbined_data, n_clusters, batch_size, 
     calc the distance between heavy traffic cluster center and pick-up location
     """
     print 'location clustering n_clusters = {}...'.format(n_clusters)
+    result_path = Configure.heavy_traffic_cluster_distances_path.format(n_clusters, most_traffic_quantile)
+    if os.path.exists(result_path):
+        result_df = pd.read_csv(result_path)
+        return result_df
+
     coords = np.vstack((conbined_data[['pickup_latitude', 'pickup_longitude']].values,
                         conbined_data[['dropoff_latitude', 'dropoff_longitude']].values))
 
@@ -80,42 +85,42 @@ def calc_heavy_traffic_cluster_distances(conbined_data, n_clusters, batch_size, 
                                             cluster_traffic.traffic.quantile(most_traffic_quantile)]['cluster']
 
     print 'calc heavy traffic cluster distances......'
+    result_df = pd.DataFrame({'id': conbined_data['id']})
+
     for most_traffic_cluster in most_traffic_clusters:
         print '>>>calc heavy_traffic_cluster_distances, most_traffic_cluster =', most_traffic_cluster
-        conbined_data['pickup_heavy_traffic_cluster{}_haversine'.format(most_traffic_cluster)] = \
+        result_df['pickup_heavy_traffic_cluster{}_haversine'.format(most_traffic_cluster)] = \
             haversine_array(conbined_data['pickup_latitude'].values,
                             conbined_data['pickup_longitude'].values,
                             cluster_centers[most_traffic_cluster][0],
                             cluster_centers[most_traffic_cluster][1])
 
-        conbined_data['pickup_heavy_traffic_cluster{}_bearing'.format(most_traffic_cluster)] = \
+        result_df['pickup_heavy_traffic_cluster{}_bearing'.format(most_traffic_cluster)] = \
             bearing_array(conbined_data['pickup_latitude'].values,
                           conbined_data['pickup_longitude'].values,
                           cluster_centers[most_traffic_cluster][0],
                           cluster_centers[most_traffic_cluster][1])
 
-        conbined_data['dropoff_heavy_traffic_cluster{}_haversine'.format(most_traffic_cluster)] = \
+        result_df['dropoff_heavy_traffic_cluster{}_haversine'.format(most_traffic_cluster)] = \
             haversine_array(conbined_data['dropoff_latitude'].values,
                             conbined_data['dropoff_longitude'].values,
                             cluster_centers[most_traffic_cluster][0],
                             cluster_centers[most_traffic_cluster][1])
 
-        conbined_data['dropoff_heavy_traffic_cluster{}_bearing'.format(most_traffic_cluster)] = \
+        result_df['dropoff_heavy_traffic_cluster{}_bearing'.format(most_traffic_cluster)] = \
             bearing_array(conbined_data['dropoff_latitude'].values,
                           conbined_data['dropoff_longitude'].values,
                           cluster_centers[most_traffic_cluster][0],
                           cluster_centers[most_traffic_cluster][1])
 
+    result_df.to_csv(result_path, index=False)
     conbined_data.drop(['calc_pickup_kmeans_{}_cluster'.format(n_clusters),
                         'calc_dropoff_kmeans_{}_cluster'.format(n_clusters)],
                        axis=1, inplace=True)
-    return conbined_data
+    return result_df
 
 
 def main():
-    if os.path.exists(Configure.processed_train_path.format('5')):
-        return
-
     train, test = data_utils.load_dataset(op_scope='4')
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     trip_durations = train['trip_duration']
@@ -123,11 +128,13 @@ def main():
     conbined_data = pd.concat([train, test])
 
     n_clusters = 10 ** 2
-    conbined_data = calc_heavy_traffic_cluster_distances(conbined_data,
-                                                         n_clusters=n_clusters,
-                                                         batch_size=64 ** 3,
-                                                         most_traffic_quantile=0.9,
-                                                         random_state=1000)
+    result_df = calc_heavy_traffic_cluster_distances(conbined_data,
+                                                     n_clusters=n_clusters,
+                                                     batch_size=64 ** 3,
+                                                     most_traffic_quantile=0.9,
+                                                     random_state=1000)
+    conbined_data = pd.merge(conbined_data, result_df, how='left', on='id')
+
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
     train['trip_duration'] = trip_durations

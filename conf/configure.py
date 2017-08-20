@@ -26,3 +26,5 @@ class Configure(object):
 
     pikcup_time_window_cluster_traffic_features_path = '../input/pikcup_after_time_window_{}_cluster_{}_traffic_features.csv'
     dropoff_time_window_cluster_traffic_features_path = '../input/dropoff_before_time_window_{}_cluster_{}_traffic_features.csv'
+
+    heavy_traffic_cluster_distances_path = '../input/heavy_traffic_cluster_{}_quantile_{}_distances.csv'

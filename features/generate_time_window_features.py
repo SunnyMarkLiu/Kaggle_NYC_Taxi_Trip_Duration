@@ -125,8 +125,6 @@ def perform_time_window(conbined_data, timewindow_days):
 
 
 def main():
-    if os.path.exists(Configure.processed_train_path.format('5')):
-        return
     train, test = data_utils.load_dataset(op_scope='4')
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     trip_durations = train['trip_duration']
@@ -136,7 +134,7 @@ def main():
     conbined_data.index = range(conbined_data.shape[0])
 
     # timewindow size in minutes
-    timewindow_days = [3, 5, 10, 15, 30]
+    timewindow_days = [3, 5, 10, 15, 30, 60]
     conbined_data = perform_time_window(conbined_data, timewindow_days)
 
     conbined_data.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
