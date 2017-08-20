@@ -34,6 +34,9 @@ def drop_some_features(conbined_data, drop_missing_rate=0.9):
 
 
 def main():
+    if os.path.exists(Configure.processed_train_path.format('4')):
+        return
+
     train, test = data_utils.load_dataset(op_scope='3')
     print 'train: {}, test: {}'.format(train.shape, test.shape)
     trip_durations = train['trip_duration']

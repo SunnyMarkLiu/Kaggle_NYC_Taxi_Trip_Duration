@@ -35,8 +35,6 @@ def main():
                 op_scope = op
 
     train, test = data_utils.load_dataset(op_scope)
-    train.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
-    test.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
 
     random_indexs = np.arange(0, train.shape[0], 10)
     train = train.iloc[random_indexs, :]

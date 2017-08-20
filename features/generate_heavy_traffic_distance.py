@@ -52,7 +52,7 @@ def calc_heavy_traffic_cluster_distances(conbined_data, n_clusters, batch_size, 
     """
     calc the distance between heavy traffic cluster center and pick-up location
     """
-    print 'location clustering n_clusters = {}...'.format(n_clusters)
+    print 'location clustering n_clusters = {}, traffic_quantile = {}...'.format(n_clusters, most_traffic_quantile)
     result_path = Configure.heavy_traffic_cluster_distances_path.format(n_clusters, most_traffic_quantile)
     if os.path.exists(result_path):
         result_df = pd.read_csv(result_path)
@@ -131,7 +131,7 @@ def main():
     result_df = calc_heavy_traffic_cluster_distances(conbined_data,
                                                      n_clusters=n_clusters,
                                                      batch_size=64 ** 3,
-                                                     most_traffic_quantile=0.9,
+                                                     most_traffic_quantile=0.80,
                                                      random_state=1000)
     conbined_data = pd.merge(conbined_data, result_df, how='left', on='id')
 
