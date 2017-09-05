@@ -34,6 +34,7 @@ def main():
             if op > op_scope:
                 op_scope = op
 
+    print 'load dataset from op_scope = {}'.format(op_scope)
     train, test = data_utils.load_dataset(op_scope)
     train.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
     test.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
