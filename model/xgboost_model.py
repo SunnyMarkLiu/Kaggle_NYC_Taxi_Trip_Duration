@@ -52,7 +52,7 @@ def main():
     print 'train:', train.shape, ', test:', test.shape
 
     print 'feature check before modeling...'
-    feature_util.feature_check_before_modeling(train, test, train.columns)
+    # feature_util.feature_check_before_modeling(train, test, train.columns)
 
     train_rmses = []
     val_rmses = []
