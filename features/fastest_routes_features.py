@@ -22,20 +22,28 @@ warnings.filterwarnings('ignore')
 
 def generate_street_heavy(train, test):
     starting_street_heavy = train.groupby(['starting_street'])['trip_duration'].mean().reset_index()
-    def street_heavy_map(street):
-        return starting_street_heavy[starting_street_heavy['starting_street'] == street]['trip_duration']
+    street_heavy_map = starting_street_heavy.set_index('starting_street').T.to_dict('list')
+    for (k, v) in street_heavy_map.items():
+        street_heavy_map[k] = v[0]
 
     train['starting_street_heavy'] = train['starting_street'].map(street_heavy_map)
     test['starting_street_heavy'] = test['starting_street'].map(street_heavy_map)
 
-    end_street_heavy = train.groupby(['starting_street'])['trip_duration'].mean().reset_index()
-    def street_heavy_map(street):
-        return end_street_heavy[end_street_heavy['end_street'] == street]['trip_duration']
+    end_street_heavy = train.groupby(['end_street'])['trip_duration'].mean().reset_index()
+    street_heavy_map = end_street_heavy.set_index('end_street').T.to_dict('list')
+    for (k, v) in street_heavy_map.items():
+        street_heavy_map[k] = v[0]
 
     train['end_street_heavy'] = train['end_street'].map(street_heavy_map)
     test['end_street_heavy'] = test['end_street'].map(street_heavy_map)
 
-# def street_for_each_step_total():
+    # total_distance vs steps
+    train['per_step_distance'] = train['total_distance'] / train['number_of_steps']
+    test['per_step_distance'] = test['total_distance'] / test['number_of_steps']
+
+    # total_travel_time vs steps
+    train['per_travel_time'] = train['total_travel_time'] / train['number_of_steps']
+    test['per_travel_time'] = test['total_travel_time'] / test['number_of_steps']
 
 
 def main():
@@ -51,6 +59,7 @@ def main():
     train = train.merge(train_fr, how='left', on='id')
     test = test.merge(test_fr, how='left', on='id')
 
+    print 'generate street heavy...'
     generate_street_heavy(train, test)
 
     train.drop(['starting_street', 'end_street', 'street_for_each_step',
