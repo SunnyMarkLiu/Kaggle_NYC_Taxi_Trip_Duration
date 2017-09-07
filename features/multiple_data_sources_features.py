@@ -63,6 +63,7 @@ def add_weather_features(train, test):
                        'month': weather_data['month'],
                        'day': weather_data['day']})
     weather_data['pickup_date'] = pd.to_datetime(df)
+    weather_data.drop(['date', 'day', 'month'], axis=1, inplace=True)
     weather_data.columns = ['maximum_temerature', 'minimum_temperature', 'average_temperature', 'precipitation',
                             'snow_fall', 'snow_depth', 'pickup_date']
 
@@ -70,7 +71,7 @@ def add_weather_features(train, test):
     weather_data['snow_fall'] = weather_data['snow_fall'].map(lambda p: float(p) if p != 'T' else -1)
     weather_data['snow_depth'] = weather_data['snow_depth'].map(lambda p: float(p) if p != 'T' else -1)
 
-    weather_data.drop(['date', 'day', 'month', 'maximum_temerature', 'minimum_temperature',
+    weather_data.drop(['maximum_temerature', 'minimum_temperature',
                        'average_temperature', 'snow_depth', 'precipitation'], axis=1, inplace=True)
 
     conbined_data['pickup_datetime'] = pd.to_datetime(conbined_data['pickup_datetime'])
