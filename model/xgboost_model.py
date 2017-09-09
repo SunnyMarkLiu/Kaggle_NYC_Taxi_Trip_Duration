@@ -16,6 +16,7 @@ import pandas as pd
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 import xgboost as xgb
+from xgboost import callback
 
 # my own module
 from conf.configure import Configure
@@ -64,12 +65,20 @@ def main():
 
     xgb_params = {
         'eta': 0.005,
-        'max_depth': 4,
+
+        'min_child_weight': 1,
+        'reg_lambda': 0.006,
+        'reg_alpha': 0.0095,
+        'scale_pos_weight': 1,
+        'colsample_bytree': 1,
         'subsample': 0.93,
+        'gamma': 0,
+        'max_depth': 8,
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'updater': 'grow_gpu',
-        'gpu_id': 1,
+        'gpu_id': 0,
+        'nthread': -1,
         'silent': 1
     }
 
@@ -83,10 +92,12 @@ def main():
 
         cv_result = xgb.cv(dict(xgb_params),
                            dtrain,
-                           num_boost_round=1000,
+                           num_boost_round=500,
                            early_stopping_rounds=50,
                            verbose_eval=50,
-                           show_stdv=False
+                           show_stdv=False,
+                           callbacks=callback.reset_learning_rate([0.01] * 500 + [0.007] * 500 + [0.005] * 2000 +
+                                                                  [0.003] * 2000 + [0.001] * 1000)
                            )
 
         num_boost_rounds = len(cv_result)
