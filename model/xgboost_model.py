@@ -76,13 +76,13 @@ def main():
         'silent': 1
     }
 
-    learning_rates = [0.01] * 1000 + [0.005] * 2000 + [0.003] * 1000 + [0.001] * 1000
+    learning_rates = [0.01] * 1000 + [0.003] * 1000 + [0.002] * 1000 + [0.001] * 1000
 
     dtrain = xgb.DMatrix(train, y_train_all, feature_names=df_columns)
 
     cv_result = xgb.cv(dict(xgb_params),
                        dtrain,
-                       num_boost_round=5000,
+                       num_boost_round=4000,
                        early_stopping_rounds=200,
                        verbose_eval=50,
                        show_stdv=False,
@@ -102,7 +102,7 @@ def main():
     y_pred = model.predict(dtest)
     y_pred = np.exp(y_pred)
     df_sub = pd.DataFrame({'id': id_test, 'trip_duration': y_pred})
-    df_sub.to_csv(Configure.submission_path, index=False)
+    df_sub.to_csv(Configure.submission_path, index=False, compression='gzip')
 
 
 if __name__ == '__main__':

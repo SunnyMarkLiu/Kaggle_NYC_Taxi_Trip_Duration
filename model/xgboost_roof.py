@@ -79,7 +79,7 @@ def main():
 
     roof_flod = 5
     kf = KFold(n_splits=roof_flod, shuffle=True, random_state=42)
-    learning_rates = [0.01] * 1000 + [0.005] * 2000 + [0.003] * 1000 + [0.001] * 1000
+    learning_rates = [0.01] * 1000 + [0.003] * 1000 + [0.002] * 1000 + [0.001] * 1000
 
     pred_train_full = np.zeros(train.shape[0])
     pred_test_full = 0
@@ -113,7 +113,7 @@ def main():
 
         test_pred_df = pd.DataFrame({'id': id_test})
         test_pred_df['trip_duration'] = np.exp(pred_test)
-        test_pred_df.to_csv("test_xgboost_roof_fold_{}.csv".format(i), index=False)
+        test_pred_df.to_csv("test_xgboost_roof_fold_{}.csv.gz".format(i), index=False, compression='gzip')
 
         del ddev, dval, model
         gc.collect()
