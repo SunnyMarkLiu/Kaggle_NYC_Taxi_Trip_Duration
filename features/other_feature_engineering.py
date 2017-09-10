@@ -104,20 +104,23 @@ def main():
 
     generate_binary_features(conbined_data)
 
-    for n_clusters in [6**2]:
-        print 'location clustering n_clusters = {}...'.format(n_clusters)
-        location_clustering(conbined_data, n_clusters=n_clusters, batch_size=64 ** 3, random_state=1000)
+    # for n_clusters in [6**2]:
+    #     print 'location clustering n_clusters = {}...'.format(n_clusters)
+    #     location_clustering(conbined_data, n_clusters=n_clusters, batch_size=64 ** 3, random_state=1000)
+    #
+    #     train = conbined_data.iloc[:train.shape[0], :]
+    #     test = conbined_data.iloc[train.shape[0]:, :]
+    #     train['trip_duration'] = trip_durations
+    #
+    #     print 'generate lat_long groupby speed features...'
+    #     train, test = generate_groupby_speed_features(train, test, n_clusters, loc1='latitude', loc2='longitude',
+    #                                                   fea_name='lat_long_')
+    #     del train['trip_duration']
+    #     print 'train: {}, test: {}'.format(train.shape, test.shape)
+    #     conbined_data = pd.concat([train, test])
 
-        train = conbined_data.iloc[:train.shape[0], :]
-        test = conbined_data.iloc[train.shape[0]:, :]
-        train['trip_duration'] = trip_durations
-
-        print 'generate lat_long groupby speed features...'
-        train, test = generate_groupby_speed_features(train, test, n_clusters, loc1='latitude', loc2='longitude',
-                                                      fea_name='lat_long_')
-        del train['trip_duration']
-        print 'train: {}, test: {}'.format(train.shape, test.shape)
-        conbined_data = pd.concat([train, test])
+    train = conbined_data.iloc[:train.shape[0], :]
+    test = conbined_data.iloc[train.shape[0]:, :]
 
     train['trip_duration'] = trip_durations
     print 'train: {}, test: {}'.format(train.shape, test.shape)
