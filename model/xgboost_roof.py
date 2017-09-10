@@ -94,10 +94,10 @@ def main():
         dval = xgb.DMatrix(val_X, val_y, feature_names=df_columns)
 
         model = xgb.train(dict(xgb_params), ddev,
-                          num_boost_round=5000,
+                          num_boost_round=4000,
                           evals=[(ddev, 'train'), (dval, 'valid')],
-                          early_stopping_rounds=60,
-                          verbose_eval=20,
+                          early_stopping_rounds=300,
+                          verbose_eval=50,
                           callbacks=[callback.reset_learning_rate(learning_rates)])
 
         pred_valid = model.predict(dval)
