@@ -67,7 +67,7 @@ def main():
         'colsample_bytree': 1,
         'subsample': 0.93,
         'gamma': 0,
-        'max_depth': 8,
+        'max_depth': 12,
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'updater': 'grow_gpu',
@@ -76,14 +76,14 @@ def main():
         'silent': 1
     }
 
-    learning_rates = [0.01] * 800 + [0.007] * 1000 + [0.005] * 1000 + [0.003] * 1000 + [0.001] * 1200
+    learning_rates = [0.005] * 2000 + [0.003] * 2000 + [0.002] * 2000
 
     dtrain = xgb.DMatrix(train, y_train_all, feature_names=df_columns)
 
     cv_result = xgb.cv(dict(xgb_params),
                        dtrain,
-                       num_boost_round=5000,
-                       early_stopping_rounds=50,
+                       num_boost_round=6000,
+                       early_stopping_rounds=200,
                        verbose_eval=50,
                        show_stdv=False,
                        callbacks=[callback.reset_learning_rate(learning_rates)]
@@ -94,7 +94,7 @@ def main():
     # train model
     print 'training on total training data...'
     train_learning_rates = learning_rates[:best_num_boost_rounds]
-    model = xgb.train(dict(xgb_params, base_score=np.mean(y_train_all)), dtrain,
+    model = xgb.train(dict(xgb_params), dtrain,
                       num_boost_round=best_num_boost_rounds,
                       callbacks=[callback.reset_learning_rate(train_learning_rates)])
 
