@@ -38,7 +38,7 @@ def main():
     train.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
     test.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
 
-    random_indexs = np.arange(0, train.shape[0], 10)
+    random_indexs = np.arange(0, train.shape[0], 2)
     train = train.iloc[random_indexs, :]
 
     train['trip_duration'] = np.log(train['trip_duration'])
@@ -71,18 +71,18 @@ def main():
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'updater': 'grow_gpu',
-        'gpu_id': 0,
+        'gpu_id': 1,
         'nthread': -1,
         'silent': 1
     }
 
-    learning_rates = [0.005] * 2000 + [0.003] * 2000 + [0.002] * 2000
+    learning_rates = [0.01] * 1000 + [0.005] * 2000 + [0.003] * 1000 + [0.001] * 1000
 
     dtrain = xgb.DMatrix(train, y_train_all, feature_names=df_columns)
 
     cv_result = xgb.cv(dict(xgb_params),
                        dtrain,
-                       num_boost_round=6000,
+                       num_boost_round=5000,
                        early_stopping_rounds=200,
                        verbose_eval=50,
                        show_stdv=False,

@@ -19,6 +19,7 @@ from xgboost import callback
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold
 
+import gc
 # my own module
 from utils import data_utils
 
@@ -78,7 +79,7 @@ def main():
 
     roof_flod = 5
     kf = KFold(n_splits=roof_flod, shuffle=True, random_state=42)
-    learning_rates = [0.005] * 2000 + [0.002] * 1000 + [0.001] * 1000 + [0.0005] * 2000
+    learning_rates = [0.01] * 1000 + [0.005] * 2000 + [0.003] * 1000 + [0.001] * 1000
 
     pred_train_full = np.zeros(train.shape[0])
     pred_test_full = 0
@@ -93,14 +94,14 @@ def main():
         dval = xgb.DMatrix(val_X, val_y, feature_names=df_columns)
 
         model = xgb.train(dict(xgb_params), ddev,
-                          num_boost_round=6000,
+                          num_boost_round=5000,
                           evals=[(ddev, 'train'), (dval, 'valid')],
                           early_stopping_rounds=60,
                           verbose_eval=20,
                           callbacks=[callback.reset_learning_rate(learning_rates)])
 
-        pred_valid = model.predict(dval, num_iteration=model.best_iteration)
-        pred_test = model.predict(dtest, num_iteration=model.best_iteration)
+        pred_valid = model.predict(dval)
+        pred_test = model.predict(dtest)
 
         valid_rmse = mean_squared_error(dval.get_label(), pred_valid)
         print '========== valid_rmse = {} =========='.format(valid_rmse)
@@ -109,6 +110,14 @@ def main():
         # run-out-of-fold predict
         pred_train_full[val_index] = pred_valid
         pred_test_full += pred_test
+
+        test_pred_df = pd.DataFrame({'id': id_test})
+        test_pred_df['trip_duration'] = np.exp(pred_test)
+        test_pred_df.to_csv("test_xgboost_roof_fold_{}.csv".format(i), index=False)
+
+        del ddev, dval, model
+        gc.collect()
+
 
     print 'Mean cv rmse:', np.mean(cv_scores)
     pred_test_full = pred_test_full / float(roof_flod)
@@ -125,6 +134,7 @@ def main():
     test_pred_df = pd.DataFrame({'id': id_test})
     test_pred_df['trip_duration'] = pred_test_full
     test_pred_df.to_csv("test_preds_xgboost.csv", index=False)
+
 
 if __name__ == '__main__':
     print '========== apply xgboost model =========='
