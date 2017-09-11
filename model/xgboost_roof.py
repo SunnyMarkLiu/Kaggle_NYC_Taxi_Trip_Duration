@@ -72,14 +72,14 @@ def main():
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'updater': 'grow_gpu',
-        'gpu_id': 0,
+        'gpu_id': 1,
         'nthread': -1,
         'silent': 1
     }
 
     roof_flod = 5
     kf = KFold(n_splits=roof_flod, shuffle=True, random_state=42)
-    learning_rates = [0.01] * 1000 + [0.003] * 1000 + [0.002] * 1000 + [0.001] * 1000
+    learning_rates = [0.01] * 800 + [0.003] * 1200 + [0.001] * 2000
 
     pred_train_full = np.zeros(train.shape[0])
     pred_test_full = 0
@@ -113,7 +113,7 @@ def main():
 
         test_pred_df = pd.DataFrame({'id': id_test})
         test_pred_df['trip_duration'] = np.exp(pred_test)
-        test_pred_df.to_csv("test_xgboost_roof_fold_{}.csv.gz".format(i), index=False, compression='gzip')
+        test_pred_df.to_csv("xgboost_roof_fold_{}_predict.csv.gz".format(i), index=False, compression='gzip')
 
         del ddev, dval, model
         gc.collect()
@@ -128,12 +128,12 @@ def main():
     # saving train predictions for ensemble #
     train_pred_df = pd.DataFrame({'id': id_train})
     train_pred_df['trip_duration'] = pred_train_full
-    train_pred_df.to_csv("train_preds_xgboost.csv", index=False)
+    train_pred_df.to_csv("xgboost_roof_predict_train.csv", index=False)
 
     # saving test predictions for ensemble #
     test_pred_df = pd.DataFrame({'id': id_test})
     test_pred_df['trip_duration'] = pred_test_full
-    test_pred_df.to_csv("test_preds_xgboost.csv", index=False)
+    test_pred_df.to_csv("xgboost_roof_predict_test.csv", index=False)
 
 
 if __name__ == '__main__':
