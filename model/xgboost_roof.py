@@ -79,7 +79,7 @@ def main():
 
     roof_flod = 5
     kf = KFold(n_splits=roof_flod, shuffle=True, random_state=42)
-    learning_rates = [0.01] * 800 + [0.003] * 1200 + [0.001] * 2000
+    learning_rates = [0.01] * 400 + [0.006] * 400 + [0.003] * 1200 + [0.001] * 2000
 
     pred_train_full = np.zeros(train.shape[0])
     pred_test_full = 0

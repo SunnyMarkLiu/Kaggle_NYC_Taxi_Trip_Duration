@@ -84,7 +84,7 @@ def main():
         'silent': 1
     }
 
-    learning_rates = [0.01] * 800 + [0.003] * 1200 + [0.001] * 2000
+    learning_rates = [0.01] * 400 + [0.006] * 400 + [0.003] * 1200 + [0.001] * 2000
     dtrain = xgb.DMatrix(train, y_train_all, feature_names=df_columns)
 
     cv_result = xgb.cv(dict(xgb_params),
