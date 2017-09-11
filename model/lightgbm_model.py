@@ -38,7 +38,11 @@ def main():
     train.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
     test.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
 
-    random_indexs = np.arange(0, train.shape[0], 1)
+    shuffled_index = np.arange(0, train.shape[0], 1)
+    np.random.shuffle(shuffled_index)
+
+    # random_indexs = shuffled_index[:int(train.shape[0] * 0.70)]
+    random_indexs = shuffled_index
     train = train.iloc[random_indexs, :]
 
     train['trip_duration'] = np.log(train['trip_duration'])
@@ -62,19 +66,18 @@ def main():
         'boosting_type': 'gbdt',
         'objective': 'regression',
         'nthread': -1,
-        'num_leaves': 2 ** 4,
-        'learning_rate': 0.05,
-        'max_depth': -1,
-        'max_bin': 255,
-        'subsample_for_bin': 50000,
-        'subsample': 0.8,
+        'subsample': 0.75,
         'subsample_freq': 1,
         'colsample_bytree': 0.6,
-        'reg_alpha': 1,
-        'reg_lambda': 0,
-        'min_split_gain': 0.5,
-        'min_child_weight': 1,
-        'min_child_samples': 10,
+        'min_split_gain': 0.4,
+
+        'num_leaves': 2 ** 6,
+        'learning_rate': 0.01,
+        'max_depth': 10,
+
+        'reg_alpha': 0.1,
+        'reg_lambda': 0.1,
+
         'scale_pos_weight': 1,
         'early_stopping_round': 20,
         'metric': 'rmsle',
@@ -88,8 +91,8 @@ def main():
 
     cv_results = lgbm.cv(lgbm_params,
                          d_train,
-                         num_boost_round=5000,
-                         nfold=3,
+                         num_boost_round=10000,
+                         nfold=5,
                          feval=lgb_rmsle_score,
                          early_stopping_rounds=300,
                          verbose_eval=50)

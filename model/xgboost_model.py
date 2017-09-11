@@ -19,7 +19,6 @@ import xgboost as xgb
 from xgboost import callback
 
 # my own module
-from conf.configure import Configure
 from utils import data_utils
 
 
@@ -40,7 +39,7 @@ def main():
     train.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
     test.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
 
-    shuffled_index = np.arange(0, train.shape[0], 20)
+    shuffled_index = np.arange(0, train.shape[0], 1)
     np.random.shuffle(shuffled_index)
 
     random_indexs = shuffled_index[:int(train.shape[0] * 0.70)]
