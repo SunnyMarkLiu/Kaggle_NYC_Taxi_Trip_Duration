@@ -8,6 +8,8 @@
 import os
 import sys
 
+import time
+
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
@@ -16,7 +18,6 @@ import pandas as pd
 import lightgbm as lgbm
 
 # my own module
-from conf.configure import Configure
 from utils import data_utils
 
 
@@ -100,7 +101,10 @@ def main():
     y_pred = model.predict(test)
     y_pred = np.exp(y_pred)
     df_sub = pd.DataFrame({'id': id_test, 'trip_duration': y_pred})
-    df_sub.to_csv(Configure.submission_path, index=False, compression='gzip')
+    submission_path = '../result/{}_submission_{}.csv.gz'.format('lightgbm',
+                                                                 time.strftime('%Y_%m_%d_%H_%M_%S',
+                                                                               time.localtime(time.time())))
+    df_sub.to_csv(submission_path, index=False, compression='gzip')
 
 
 if __name__ == '__main__':

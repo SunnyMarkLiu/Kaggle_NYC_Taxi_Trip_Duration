@@ -8,6 +8,8 @@
 import os
 import sys
 
+import time
+
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
@@ -17,7 +19,6 @@ import xgboost as xgb
 from xgboost import callback
 
 # my own module
-from conf.configure import Configure
 from utils import data_utils
 
 
@@ -38,7 +39,11 @@ def main():
     train.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
     test.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
 
-    random_indexs = np.arange(0, train.shape[0], 2)
+    shuffled_index = np.arange(0, train.shape[0])
+    np.random.shuffle(shuffled_index)
+
+    random_indexs = shuffled_index[:int(train.shape[0] * 0.70)]
+    # random_indexs = np.arange(0, train.shape[0], 2)
     train = train.iloc[random_indexs, :]
 
     train['trip_duration'] = np.log(train['trip_duration'])
@@ -76,8 +81,7 @@ def main():
         'silent': 1
     }
 
-    learning_rates = [0.01] * 1000 + [0.003] * 1000 + [0.002] * 1000 + [0.001] * 1000
-
+    learning_rates = [0.1] * 500 + [0.01] * 500 + [0.006] * 500 + [0.004] * 500 + [0.002] * 1000 + [0.001] * 1000
     dtrain = xgb.DMatrix(train, y_train_all, feature_names=df_columns)
 
     cv_result = xgb.cv(dict(xgb_params),
@@ -102,7 +106,10 @@ def main():
     y_pred = model.predict(dtest)
     y_pred = np.exp(y_pred)
     df_sub = pd.DataFrame({'id': id_test, 'trip_duration': y_pred})
-    df_sub.to_csv(Configure.submission_path, index=False, compression='gzip')
+    submission_path = '../result/{}_submission_{}.csv.gz'.format('xgboost',
+                                                                 time.strftime('%Y_%m_%d_%H_%M_%S',
+                                                                               time.localtime(time.time())))
+    df_sub.to_csv(submission_path, index=False, compression='gzip')
 
 
 if __name__ == '__main__':
