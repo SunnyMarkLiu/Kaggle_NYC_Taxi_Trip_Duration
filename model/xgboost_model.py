@@ -19,6 +19,7 @@ import xgboost as xgb
 from xgboost import callback
 
 # my own module
+from conf.configure import Configure
 from utils import data_utils
 
 
@@ -39,7 +40,7 @@ def main():
     train.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
     test.drop(['pickup_datetime', 'dropoff_datetime'], axis=1, inplace=True)
 
-    shuffled_index = np.arange(0, train.shape[0])
+    shuffled_index = np.arange(0, train.shape[0], 20)
     np.random.shuffle(shuffled_index)
 
     random_indexs = shuffled_index[:int(train.shape[0] * 0.70)]
@@ -48,10 +49,13 @@ def main():
 
     train['trip_duration'] = np.log(train['trip_duration'])
     y_train_all = train['trip_duration']
-    del train['id']
+    # del train['id']
     del train['trip_duration']
     id_test = test['id']
-    del test['id']
+    # del test['id']
+
+    train['id'] = train['id'].map(lambda i: int(i[2:]))
+    test['id'] = test['id'].map(lambda i: int(i[2:]))
 
     print 'train:', train.shape, ', test:', test.shape
 
@@ -81,7 +85,7 @@ def main():
         'silent': 1
     }
 
-    learning_rates = [0.1] * 500 + [0.01] * 500 + [0.006] * 500 + [0.004] * 500 + [0.002] * 1000 + [0.001] * 1000
+    learning_rates = [0.01] * 1000 + [0.003] * 1000 + [0.001] * 2000
     dtrain = xgb.DMatrix(train, y_train_all, feature_names=df_columns)
 
     cv_result = xgb.cv(dict(xgb_params),
@@ -107,8 +111,7 @@ def main():
     y_pred = np.exp(y_pred)
     df_sub = pd.DataFrame({'id': id_test, 'trip_duration': y_pred})
     submission_path = '../result/{}_submission_{}.csv.gz'.format('xgboost',
-                                                                 time.strftime('%Y_%m_%d_%H_%M_%S',
-                                                                               time.localtime(time.time())))
+                                                                 time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime(time.time())))
     df_sub.to_csv(submission_path, index=False, compression='gzip')
 
 
