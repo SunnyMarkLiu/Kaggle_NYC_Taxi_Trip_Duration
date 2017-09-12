@@ -94,8 +94,8 @@ def main():
                          num_boost_round=20000,
                          nfold=5,
                          feval=lgb_rmsle_score,
-                         early_stopping_rounds=300,
-                         verbose_eval=50)
+                         early_stopping_rounds=200,
+                         verbose_eval=20)
 
     best_num_boost_rounds = len(cv_results['rmsle-mean'])
     print 'best_num_boost_rounds =', best_num_boost_rounds
