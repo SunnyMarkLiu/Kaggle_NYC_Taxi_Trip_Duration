@@ -72,7 +72,7 @@ def main():
         'min_split_gain': 0.4,
 
         'num_leaves': 2 ** 6,
-        'learning_rate': 0.01,
+        'learning_rate': 0.015,
         'max_depth': 10,
 
         'reg_alpha': 0.1,
@@ -91,7 +91,7 @@ def main():
 
     cv_results = lgbm.cv(lgbm_params,
                          d_train,
-                         num_boost_round=10000,
+                         num_boost_round=20000,
                          nfold=5,
                          feval=lgb_rmsle_score,
                          early_stopping_rounds=300,

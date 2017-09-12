@@ -44,10 +44,10 @@ def main():
     train['trip_duration'] = np.log(train['trip_duration'])
     y_train_all = train['trip_duration']
     id_train = train['id']
-    del train['id']
+    # del train['id']
     del train['trip_duration']
     id_test = test['id']
-    del test['id']
+    # del test['id']
 
     print 'train:', train.shape, ', test:', test.shape
 
