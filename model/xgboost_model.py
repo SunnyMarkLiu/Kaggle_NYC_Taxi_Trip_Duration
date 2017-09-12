@@ -42,7 +42,8 @@ def main():
     shuffled_index = np.arange(0, train.shape[0], 1)
     np.random.shuffle(shuffled_index)
 
-    random_indexs = shuffled_index[:int(train.shape[0] * 0.70)]
+    # random_indexs = shuffled_index[:int(train.shape[0] * 0.70)]
+    random_indexs = shuffled_index
     # random_indexs = np.arange(0, train.shape[0], 2)
     train = train.iloc[random_indexs, :]
 
@@ -78,13 +79,13 @@ def main():
         'max_depth': 14,
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
-        'updater': 'grow_gpu',
-        'gpu_id': 1,
+        # 'updater': 'grow_gpu',
+        # 'gpu_id': 1,
         'nthread': -1,
         'silent': 1
     }
 
-    learning_rates = [0.01] * 400 + [0.006] * 400 + [0.002] * 1200 + [0.001] * 1000 + [0.0001] * 2000
+    learning_rates = [0.01] * 400 + [0.005] * 400 + [0.002] * 1000 + [0.001] * 1200 + [0.0001] * 2000
     dtrain = xgb.DMatrix(train, y_train_all, feature_names=df_columns)
 
     cv_result = xgb.cv(dict(xgb_params),
