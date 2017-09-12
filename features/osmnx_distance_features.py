@@ -45,7 +45,7 @@ def main():
     else:
         area_graph = ox.load_graphml(STREETGRAPH_FILENAME)
 
-    def driving_distance(startpoint, endpoint):
+    def driving_distance(raw):
         """
         Calculates the driving distance along an osmnx street network between two coordinate-points.
         The Driving distance is calculated from the closest nodes to the coordinate points.
@@ -56,7 +56,8 @@ def main():
         startpoint -- The Starting point as coordinate Tuple
         endpoint -- The Ending point as coordinate Tuple
         """
-
+        startpoint = (raw['pickup_latitude'], raw['pickup_longitude'])
+        endpoint = (raw['dropoff_latitude'], raw['dropoff_longitude'])
         # Find nodes closest to the specified Coordinates
         node_start = ox.utils.get_nearest_node(area_graph, startpoint)
         node_stop = ox.utils.get_nearest_node(area_graph, endpoint)
@@ -67,8 +68,8 @@ def main():
         return distance
 
     print 'calc osmnx distance features...'
-    conbined_data['osmnx_distance'] = conbined_data.apply(lambda raw: driving_distance((raw['pickup_latitude'],raw['pickup_longitude']),
-                                                                                       (raw['dropoff_latitude'], raw['dropoff_longitude'])))
+    conbined_data['osmnx_distance'] = conbined_data[['pickup_latitude','pickup_longitude',
+                                                     'dropoff_latitude','dropoff_longitude']].apply(driving_distance, axis=1)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
