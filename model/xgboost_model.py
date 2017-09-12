@@ -90,8 +90,8 @@ def main():
     cv_result = xgb.cv(dict(xgb_params),
                        dtrain,
                        num_boost_round=5000,
-                       early_stopping_rounds=300,
-                       verbose_eval=50,
+                       early_stopping_rounds=200,
+                       verbose_eval=20,
                        show_stdv=False,
                        callbacks=[callback.reset_learning_rate(learning_rates)]
                        )

@@ -115,9 +115,9 @@ def main():
                            lgb_train,
                            num_boost_round=20000,
                            valid_sets=lgb_eval,
-                           early_stopping_rounds=300,
+                           early_stopping_rounds=200,
                            feval=lgb_rmsle_score,
-                           verbose_eval=50)
+                           verbose_eval=20)
 
         predict_val = model.predict(val_X)
         predict_test = model.predict(X_test)

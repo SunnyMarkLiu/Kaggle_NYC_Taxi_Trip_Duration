@@ -49,6 +49,9 @@ def main():
     id_test = test['id']
     # del test['id']
 
+    train['id'] = train['id'].map(lambda d: int(d[2:]))
+    test['id'] = test['id'].map(lambda d: int(d[2:]))
+
     print 'train:', train.shape, ', test:', test.shape
 
     print 'feature check before modeling...'
@@ -57,7 +60,7 @@ def main():
     X_train = train
     X_test = test
     df_columns = train.columns.values
-    dtest = xgb.DMatrix(X_test, feature_names=df_columns)
+    dtest = xgb.DMatrix(X_test.values, feature_names=df_columns)
 
     xgb_params = {
         # 'eta': 0.005,
@@ -72,14 +75,14 @@ def main():
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'updater': 'grow_gpu',
-        'gpu_id': 1,
+        'gpu_id': 2,
         'nthread': -1,
         'silent': 1
     }
 
     roof_flod = 5
     kf = KFold(n_splits=roof_flod, shuffle=True, random_state=42)
-    learning_rates = [0.01] * 400 + [0.006] * 400 + [0.002] * 1200 + [0.001] * 1000 + [0.0001] * 2000
+    learning_rates = [0.01] * 400 + [0.006] * 400 + [0.002] * 1200 + [0.001] * 1000
 
     pred_train_full = np.zeros(train.shape[0])
     pred_test_full = 0
@@ -94,10 +97,10 @@ def main():
         dval = xgb.DMatrix(val_X, val_y, feature_names=df_columns)
 
         model = xgb.train(dict(xgb_params), ddev,
-                          num_boost_round=4000,
+                          num_boost_round=3000,
                           evals=[(ddev, 'train'), (dval, 'valid')],
-                          early_stopping_rounds=300,
-                          verbose_eval=50,
+                          early_stopping_rounds=200,
+                          verbose_eval=20,
                           callbacks=[callback.reset_learning_rate(learning_rates)])
 
         pred_valid = model.predict(dval)
@@ -117,7 +120,6 @@ def main():
 
         del ddev, dval, model
         gc.collect()
-
 
     print 'Mean cv rmse:', np.mean(cv_scores)
     pred_test_full = pred_test_full / float(roof_flod)
