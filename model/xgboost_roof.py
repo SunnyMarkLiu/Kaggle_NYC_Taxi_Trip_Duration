@@ -82,7 +82,7 @@ def main():
 
     roof_flod = 5
     kf = KFold(n_splits=roof_flod, shuffle=True, random_state=42)
-    learning_rates = [0.01] * 400 + [0.005] * 400 + [0.002] * 1200 + [0.001] * 1000
+    learning_rates = [0.01] * 400 + [0.002] * 4600
 
     pred_train_full = np.zeros(train.shape[0])
     pred_test_full = 0
@@ -97,7 +97,7 @@ def main():
         dval = xgb.DMatrix(val_X, val_y, feature_names=df_columns)
 
         model = xgb.train(dict(xgb_params), ddev,
-                          num_boost_round=3000,
+                          num_boost_round=5000,
                           evals=[(ddev, 'train'), (dval, 'valid')],
                           early_stopping_rounds=200,
                           verbose_eval=20,
