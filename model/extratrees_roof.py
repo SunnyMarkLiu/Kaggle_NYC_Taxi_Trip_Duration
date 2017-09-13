@@ -2,7 +2,7 @@
 # _*_ coding: utf-8 _*_
 
 """
-sklearn GradientBoostingRegressor model
+sklearn ExtraTreesRegressor model
 
 @author: MarkLiu
 @time  : 17-9-13 上午10:02
@@ -15,7 +15,7 @@ sys.path.append(module_path)
 
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_squared_error
 import gc
@@ -81,12 +81,11 @@ def main():
         train_X, val_X = X_train.ix[dev_index], X_train.ix[val_index]
         train_y, val_y = Y_train[dev_index], Y_train[val_index]
 
-        model = GradientBoostingRegressor(learning_rate=0.01,
-                                          n_estimators=500,
-                                          subsample=0.85,
-                                          max_depth=8,
-                                          random_state=42,
-                                          verbose=1)
+        model = ExtraTreesRegressor(n_estimators=500,
+                                    n_jobs=-1,
+                                    max_depth=8,
+                                    random_state=42,
+                                    verbose=1)
         model.fit(train_X, train_y)
 
         predict_val = model.predict(val_X)
@@ -112,14 +111,14 @@ def main():
     # saving train predictions for ensemble #
     train_pred_df = pd.DataFrame({'id': id_train})
     train_pred_df['trip_duration'] = pred_train_full
-    train_pred_df.to_csv("./model_ensemble/gbrt_roof_predict_train.csv", index=False)
+    train_pred_df.to_csv("./model_ensemble/extratrees_roof_predict_train.csv", index=False)
 
     # saving test predictions for ensemble #
     test_pred_df = pd.DataFrame({'id': id_test})
     test_pred_df['trip_duration'] = pred_test_full
-    test_pred_df.to_csv("./model_ensemble/gbrt_roof_predict_test.csv", index=False)
+    test_pred_df.to_csv("./model_ensemble/extratrees_roof_predict_test.csv", index=False)
 
 
 if __name__ == '__main__':
-    print '========== apply GradientBoostingRegressor model =========='
+    print '========== apply ExtraTreesRegressor model =========='
     main()
