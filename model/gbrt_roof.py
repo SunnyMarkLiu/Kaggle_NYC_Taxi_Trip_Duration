@@ -82,7 +82,7 @@ def main():
         train_y, val_y = Y_train[dev_index], Y_train[val_index]
 
         model = GradientBoostingRegressor(learning_rate=0.01,
-                                          n_estimators=2,
+                                          n_estimators=500,
                                           subsample=0.85,
                                           max_depth=8,
                                           random_state=42,
